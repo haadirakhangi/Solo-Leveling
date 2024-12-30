@@ -2,7 +2,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import HomePage from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/register/Register";
-import "./pages/student/content/i18n"
+// import "./pages/student/content/i18n"
 function App() {
   return (
     <Routes>
