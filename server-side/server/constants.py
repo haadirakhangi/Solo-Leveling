@@ -4,16 +4,6 @@ from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
 from api.gemini_client import GeminiProvider
 from api.serper_client import SerperProvider
 from api.tavily_client import TavilyProvider
-from core.submodule_generator import SubModuleGenerator
-from core.content_generator import ContentGenerator
-from core.module_generator import ModuleGenerator
-from core.quiz_generator import QuizGenerator
-from core.pdf_generator import PdfGenerator
-from core.ppt_generator import PptGenerator
-from core.lab_manual_generator import LabManualGenerator
-from core.evaluator import Evaluator
-from core.recommendation_generator import RecommendationGenerator
-from core.lesson_planner import LessonPlanner
 from server.utils import AssistantUtils
 import os
 
@@ -26,16 +16,6 @@ EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 GEMINI_CLIENT = GeminiProvider()
 TAVILY_CLIENT = TavilyProvider()
 TOOLS = [AssistantUtils.get_page_context]
-MODULE_GENERATOR = ModuleGenerator()
-SUB_MODULE_GENERATOR = SubModuleGenerator()
-CONTENT_GENERATOR = ContentGenerator()
-PDF_GENERATOR = PdfGenerator()
-LAB_MANUAL_GENERATOR = LabManualGenerator()
-PPT_GENERATOR = PptGenerator()
-QUIZ_GENERATOR = QuizGenerator()
-LESSON_PLANNER = LessonPlanner()
-RECOMMENDATION_GENERATOR = RecommendationGenerator()
-EVALUATOR = Evaluator()
 USER_DOCS_PATH = os.path.join('server', 'user_docs')
 AVAILABLE_TOOLS = {
     'get_context_from_page': AssistantUtils.get_page_context

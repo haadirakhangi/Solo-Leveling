@@ -19,6 +19,6 @@ def create_app():
     bcrypt.init_app(app)
     migrate = Migrate(app, db)
 
-    from server.student.routes import students
+    from server.student.routes_original import students
     app.register_blueprint(students, url_prefix="/student")
     return app
