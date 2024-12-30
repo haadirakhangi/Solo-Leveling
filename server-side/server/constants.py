@@ -4,6 +4,7 @@ from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
 from api.gemini_client import GeminiProvider
 from api.serper_client import SerperProvider
 from api.tavily_client import TavilyProvider
+from core.evaluator import Evaluator
 from server.utils import AssistantUtils
 import os
 
@@ -15,6 +16,7 @@ CLIP_TOKENIZER = AutoTokenizer.from_pretrained(IMAGE_EMBEDDING_MODEL_NAME, clean
 EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 GEMINI_CLIENT = GeminiProvider()
 TAVILY_CLIENT = TavilyProvider()
+EVALUATOR = Evaluator()
 TOOLS = [AssistantUtils.get_page_context]
 USER_DOCS_PATH = os.path.join('server', 'user_docs')
 AVAILABLE_TOOLS = {

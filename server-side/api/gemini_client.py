@@ -59,9 +59,9 @@ class GeminiProvider:
                 print("Invalid JSON response, retrying in 10 seconds...")
                 time.sleep(3)
 
-    def upload_file(self, file_path):
+    def upload_file(self, file_bytes, mime_type="video/mp4"):
         print("Uploading file...")
-        file = genai.upload_file(path=file_path)
+        file = genai.upload_file(path=file_bytes, mime_type=mime_type)
         print(f"Completed upload: {file.uri}.\nProcessing file...")
         while file.state.name == "PROCESSING":
             print('.', end='')

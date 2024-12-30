@@ -1,6 +1,5 @@
 # import string
 # import secrets
-# from io import BytesIO
 # from server import db, bcrypt
 # from datetime import datetime
 # from gtts import gTTS
@@ -14,7 +13,6 @@
 # from langchain.text_splitter import RecursiveCharacterTextSplitter
 # from langchain_community.document_loaders import PyPDFLoader
 # from api.serper_client import SerperProvider
-# from server.constants import *
 # from server.utils import ServerUtils
 # from pymongo import MongoClient
 # from pymongo.server_api import ServerApi
@@ -33,6 +31,8 @@ from urllib.parse import quote_plus
 from io import BytesIO
 from bson import ObjectId
 from PyPDF2 import PdfReader
+from server.constants import *
+from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv()
 
@@ -74,8 +74,11 @@ def register():
         filename = secure_filename(resume.filename)
         resume_id = fs.put(resume, filename=filename)
 
+        hashed_password = generate_password_hash(data["password"])
+
         # Insert student data into MongoDB
         student_data = {field: data[field] for field in required_fields}
+        student_data['password'] = hashed_password # Store the hashed password
         student_data['resume_id'] = str(resume_id)  # Save the GridFS file ID
 
         std_profile_coll.insert_one(student_data)
@@ -85,18 +88,18 @@ def register():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.route('login', methods=['GET'])
+@students.route('/login', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def login():
     try:
         # Parse login data
-        data = request.json
+        data : dict = request.json
         email = data.get("email")
         password = data.get("password")
 
         # Check credentials
-        student = std_profile_coll.find_one({"email": email, "password": password})
-        if not student:
+        student = std_profile_coll.find_one({"email": email})
+        if student is None or not check_password_hash(student["password"], password):
             return jsonify({"error": "Invalid email or password"}), 401
 
         return jsonify({"message": "Login successful", "student_id": str(student["_id"])}), 200
@@ -104,10 +107,12 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@students.route('/get_resume/<student_id>', methods=['GET'])
+@students.route('/get-resume-text', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def get_resume(student_id):
     try:
+        data : dict = request.json
+        student_id = data.get("student_id")
         # Retrieve the student record
         student = std_profile_coll.find_one({"_id": ObjectId(student_id)})
         if not student:
@@ -130,4 +135,29 @@ def get_resume(student_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@students.route('/analyze-conversation', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def anaylze_conversation():
+    try:
+        data : dict = request.json
+        if 'video_file' not in request.files:
+            return jsonify({"error": "Video file is required"}), 400
+        else:
+            video_file = request.files.get('video_file')
+        current_dir = os.path.dirname(__file__)
+        uploads_path = os.path.join(current_dir, 'videos', 'soft-skills')
+        if not os.path.exists(uploads_path):
+            os.makedirs(uploads_path)
 
+        if video_file:
+            filename = secure_filename(video_file.filename)
+            video_file_path = os.path.join(uploads_path, filename)
+            video_file.save(video_file_path)
+        video_bytes = BytesIO(video_file.read())
+        scenario = data.get("scenario")
+        response = EVALUATOR.evaluate_video_for_soft_skills(video_bytes, scenario)
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
