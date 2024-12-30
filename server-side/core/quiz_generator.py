@@ -4,7 +4,7 @@ class QuizGenerator:
     def __init__(self):
         self.gemini_client = GeminiProvider()
     
-    def generate_quiz_for_hard_skills(self, skills_list):
+    def generate_quiz_for_hard_skills(self, skills_list : list):
         prompt = """You are a skilled quiz creator and you have expertise in creating quizzes on hard skills. You will receive a list of 5 skills as input. For each skill, generate an interactive quiz consisting of 5-10 multiple-choice questions with 4 options in each question, designed to assess the user's proficiency level.
 
         **<INSTRUCTIONS>**

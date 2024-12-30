@@ -1,5 +1,6 @@
 import os
 import ast
+import time
 from dotenv import load_dotenv
 import google.generativeai as genai
 import time 
@@ -23,7 +24,7 @@ class GeminiProvider:
             output = completion.text
         return output
 
-    def generate_json_response(self, prompt, response_schema=None, markdown=False):
+    def generate_json_response(self, prompt, response_schema=None, markdown=False, video_file=None):
         while True:
             try:
                 if markdown:
@@ -39,11 +40,17 @@ class GeminiProvider:
                         response_schema = response_schema,
                         temperature=0.5
                     )
-
-                completion = self.gemini_client.generate_content(
-                    prompt,
-                    generation_config=generation_config,
-                )
+                if video_file is not None:
+                    completion = self.gemini_client.generate_content(
+                        [video_file, prompt],
+                        generation_config=generation_config,
+                        request_options={"timeout": 600}
+                    )
+                else:
+                    completion = self.gemini_client.generate_content(
+                        prompt,
+                        generation_config=generation_config,
+                    )
                 if markdown:
                     return completion.text
                 output = ast.literal_eval(completion.text)
@@ -51,7 +58,20 @@ class GeminiProvider:
             except Exception as e:
                 print("Invalid JSON response, retrying in 10 seconds...")
                 time.sleep(3)
-        
+
+    def upload_file(self, file_path):
+        print("Uploading file...")
+        file = genai.upload_file(path=file_path)
+        print(f"Completed upload: {file.uri}.\nProcessing file...")
+        while file.state.name == "PROCESSING":
+            print('.', end='')
+            time.sleep(1)
+            file = genai.get_file(file.name)
+
+        if file.state.name == "FAILED":
+            raise ValueError(file.state.name)
+        return file
+    
     def explain_two_image(self, prompt, image1, image2):
         completion = self.gemini_client.generate_content(
             [prompt,image1,image2],
