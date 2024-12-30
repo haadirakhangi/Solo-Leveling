@@ -26,6 +26,7 @@ google-generativeai
 langchain-community
 beautifulsoup4
 PyMuPDF
+PyPDF2
 Pillow
 pykka
 flask[async]
