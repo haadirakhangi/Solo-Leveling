@@ -9,9 +9,9 @@ class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY')
     
     # sqlalchemy configurations
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
+    # SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # SQLALCHEMY_ECHO = True
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
 
     # client session configuration
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=60)
