@@ -6,11 +6,9 @@ from google import genai
 from google.genai import types, chats
 import time 
 load_dotenv()
-os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
-
 class GeminiProvider:
     def __init__(self, profile=None, tools=None):
-        self.gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        self.gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         self.model = "gemini-1.5-flash"
         if profile and tools:
             self.chat= self.initialize_assistant(profile, tools)
