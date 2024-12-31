@@ -1,3 +1,4 @@
+google-genai
 flask
 python-dotenv
 langchain
@@ -22,7 +23,6 @@ pytz
 google-search-results
 faiss-cpu
 pypdf
-google-generativeai
 langchain-community
 beautifulsoup4
 PyMuPDF

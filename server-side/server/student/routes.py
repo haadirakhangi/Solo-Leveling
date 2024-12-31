@@ -146,17 +146,15 @@ def anaylze_conversation():
         else:
             video_file = request.files.get('video_file')
         current_dir = os.path.dirname(__file__)
-        uploads_path = os.path.join(current_dir, 'videos', 'soft-skills')
+        uploads_path = os.path.join(current_dir, 'videos', 'soft-skills-analysis')
         if not os.path.exists(uploads_path):
             os.makedirs(uploads_path)
 
-        if video_file:
-            filename = secure_filename(video_file.filename)
-            video_file_path = os.path.join(uploads_path, filename)
-            video_file.save(video_file_path)
-        video_bytes = BytesIO(video_file.read())
+        filename = secure_filename(video_file.filename)
+        video_file_path = os.path.join(uploads_path, filename)
+        video_file.save(video_file_path)
         scenario = data.get("scenario")
-        response = EVALUATOR.evaluate_video_for_soft_skills(video_bytes, scenario)
+        response = EVALUATOR.evaluate_video_for_soft_skills(video_file_path, scenario)
         return jsonify(response), 200
 
     except Exception as e:
