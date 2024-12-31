@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import App from './App.tsx'
 import './pages/index.css'
 import { ChakraProvider } from '@chakra-ui/react'
