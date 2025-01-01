@@ -3,6 +3,7 @@ flask
 python-dotenv
 langchain
 langchain-google-genai
+google-generativeai
 pandas
 numpy
 pymongo
@@ -26,7 +27,6 @@ pypdf
 langchain-community
 beautifulsoup4
 PyMuPDF
-PyPDF2
 Pillow
 pykka
 flask[async]

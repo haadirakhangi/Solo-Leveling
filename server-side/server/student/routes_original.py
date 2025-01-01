@@ -8,7 +8,6 @@ from gtts import gTTS
 from sqlalchemy import desc
 from deep_translator import GoogleTranslator
 from flask import request, session, jsonify, send_file, Blueprint
-from models.student_schema import User, Topic, Module, CompletedModule, Query, OngoingModule
 from concurrent.futures import ThreadPoolExecutor
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
