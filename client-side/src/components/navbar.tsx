@@ -16,6 +16,8 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { FaHome, FaSignInAlt, FaUserPlus, FaChalkboardTeacher } from 'react-icons/fa';
 import { RiAiGenerate } from "react-icons/ri";
 import { MdOutlineTravelExplore, MdCreateNewFolder, MdLogout } from "react-icons/md";
+import { PiStudent } from "react-icons/pi";
+import { GiTeacher } from "react-icons/gi";
 import { Logo } from './icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -40,7 +42,6 @@ const NavLink: React.FC<NavLinkProps> = ({ children, href }) => (
         {children}
     </Link>
 );
-
 
 export const Navbar = () => {
     const navigate = useNavigate();
@@ -73,7 +74,6 @@ export const Navbar = () => {
         }
     };
 
-
     useEffect(() => {
         const isStudentAuthenticated = sessionStorage.getItem('student_authenticated') === 'true';
         const isTeacherAuthenticated = sessionStorage.getItem('teacher_authenticated') === 'true';
@@ -102,7 +102,6 @@ export const Navbar = () => {
                         </Box>
                     </HStack>
                 </Link>
-
 
                 <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }} ml="auto">
                     {teacherAuthenticated && (
@@ -163,15 +162,11 @@ export const Navbar = () => {
                                 </MenuButton>
                                 <MenuList>
                                     <MenuItem onClick={() => navigate("/student/explore")}>
-                                        <MdOutlineTravelExplore size={20} style={{marginRight:8}}/>
+                                        <MdOutlineTravelExplore size={20} style={{ marginRight: 8 }} />
                                         <span>Smart Courses</span>
                                     </MenuItem>
-                                    {/* <MenuItem onClick={() => navigate("/student/pers-courses")}>
-                                        <FaFileAlt size={20} />
-                                        <span>Personalized Content</span>
-                                    </MenuItem> */}
                                     <MenuItem onClick={() => navigate("/student/shared-courses")}>
-                                        <FaChalkboardTeacher size={20} style={{marginRight:8}}/>
+                                        <FaChalkboardTeacher size={20} style={{ marginRight: 8 }} />
                                         <span>View Shared Courses</span>
                                     </MenuItem>
                                 </MenuList>
@@ -195,12 +190,32 @@ export const Navbar = () => {
                     )}
                     {!teacherAuthenticated && !studentAuthenticated && (
                         <>
-                            <NavLink href="/register">
-                                <HStack spacing={2}>
-                                    <FaUserPlus size={24} />
-                                    <span>Sign Up</span>
-                                </HStack>
-                            </NavLink>
+                            <Menu>
+                                <MenuButton
+                                    px={2}
+                                    py={1}
+                                    className="feature-heading"
+                                    rounded="md"
+                                    color={"white"}
+                                    _hover={{ transform: 'scale(1.1)', color: 'purple.800', bg: 'white', textDecoration: 'none' }}
+                                    transition="transform 0.3s ease-in-out"
+                                >
+                                    <HStack spacing={2}>
+                                        <FaUserPlus size={24} />
+                                        <span>Sign Up</span>
+                                    </HStack>
+                                </MenuButton>
+                                <MenuList>
+                                    <MenuItem onClick={() => navigate("/register/student")}>
+                                    <PiStudent size={20} style={{ marginRight: 8 }} />
+                                        <span>Student Registration</span>
+                                    </MenuItem>
+                                    <MenuItem onClick={() => navigate("/register/teacher")}>
+                                    <GiTeacher size={20} style={{ marginRight: 8 }} />
+                                        <span>Teacher Registration</span>
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
 
                             <NavLink href="/login">
                                 <HStack spacing={2}>
@@ -211,8 +226,6 @@ export const Navbar = () => {
                         </>
                     )}
                 </HStack>
-
-
             </Flex>
 
             {/* Mobile menu when open */}
@@ -222,6 +235,30 @@ export const Navbar = () => {
                         <NavLink href="/">Home</NavLink>
                         <NavLink href="/teacher/create">Create</NavLink>
                         <NavLink href="/login">Login</NavLink>
+                        <Menu>
+                            <MenuButton
+                                px={2}
+                                py={1}
+                                className="feature-heading"
+                                rounded="md"
+                                color={"white"}
+                                _hover={{ transform: 'scale(1.1)', color: 'purple.800', bg: 'white', textDecoration: 'none' }}
+                                transition="transform 0.3s ease-in-out"
+                            >
+                                <HStack spacing={2}>
+                                    <FaUserPlus size={24} />
+                                    <span>Sign Up</span>
+                                </HStack>
+                            </MenuButton>
+                            <MenuList>
+                                <MenuItem onClick={() => navigate("/register/student")}>
+                                    <span>Student Registration</span>
+                                </MenuItem>
+                                <MenuItem onClick={() => navigate("/register/teacher")}>
+                                    <span>Teacher Registration</span>
+                                </MenuItem>
+                            </MenuList>
+                        </Menu>
                     </Stack>
                 </Box>
             ) : null}

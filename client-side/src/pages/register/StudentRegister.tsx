@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Navbar } from '../../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
@@ -512,7 +513,6 @@ const StudentRegister = () => {
           duration: 3000,
           isClosable: true,
         });
-        console.log(response.data);
         navigate('/login');
       } else {
         // User already exists
@@ -538,33 +538,80 @@ const StudentRegister = () => {
   };
 
   return (
-    <Flex
-      bg={useColorModeValue('purple.200', 'purple.800')}
-      width="full"
-      align="center"
-      justifyContent="center"
-      minHeight={'79vh'}
-    >
-      <Box
-        rounded="lg"
-        my={10}
-        bg={useColorModeValue('white', 'gray.900')}
-        shadow="dark-lg"
-        maxWidth={800}
-        borderColor={useColorModeValue('purple.400', 'gray.900')}
-        p={6}
+    <div>
+      <Navbar/>
+      <Flex
+        bg={useColorModeValue('purple.200', 'purple.800')}
+        width="full"
+        align="center"
+        justifyContent="center"
+        direction="column"
+        minHeight={'79vh'}
       >
-        <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && <Form1 register={register} errors={errors} />}
-          {step === 2 && <Form2 register={register} errors={errors} />}
-          {step === 3 && <Form3 register={register} errors={errors} />}
-          {step === 4 && <Form4 register={register} errors={errors} />}
-          {step === 5 && <Form5 register={register} errors={errors} />}
-          <ButtonGroup mt="5%" w="100%">
-            <Flex w="100%" justifyContent="space-between">
-              <Flex>
-                {step > 1 && (
+        <Text fontSize="4xl"
+          fontWeight="bold"
+          color={useColorModeValue('purple.800', 'purple.100')}
+          mb={8}
+          mt={8}
+          >
+          Student Registration
+        </Text>
+        <Box
+          rounded="lg"
+          bg={useColorModeValue('white', 'gray.900')}
+          shadow="dark-lg"
+          maxWidth={800}
+          borderColor={useColorModeValue('purple.400', 'gray.900')}
+          p={6}
+        >
+          <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {step === 1 && <Form1 register={register} errors={errors} />}
+            {step === 2 && <Form2 register={register} errors={errors} />}
+            {step === 3 && <Form3 register={register} errors={errors} />}
+            {step === 4 && <Form4 register={register} errors={errors} />}
+            {step === 5 && <Form5 register={register} errors={errors} />}
+            <ButtonGroup mt="5%" w="100%">
+              <Flex w="100%" justifyContent="space-between">
+                <Flex>
+                  {step > 1 && (
+                    <Button
+                      variant="outline"
+                      colorScheme="purple"
+                      _hover={{
+                        bg: useColorModeValue('purple.600', 'purple.800'),
+                        color: useColorModeValue('white', 'white'),
+                      }}
+                      onClick={() => {
+                        setStep(step - 1);
+                        setProgress(progress - 20); // Decrement by 20
+                      }}
+                    >
+                      Previous
+                    </Button>
+                  )}
+                  {step < 5 && (
+                    <Button
+                      variant="outline"
+                      colorScheme="purple"
+                      ml={3}
+                      _hover={{
+                        bg: useColorModeValue('purple.600', 'purple.800'),
+                        color: useColorModeValue('white', 'white'),
+                      }}
+                      onClick={async () => {
+                        const isValid = await trigger();
+                        if (isValid) {
+                          setStep(step + 1);
+                          setProgress(progress + 20); // Increment by 20
+                        }
+                      }}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </Flex>
+                {step === 5 && (
                   <Button
                     variant="outline"
                     colorScheme="purple"
@@ -572,53 +619,18 @@ const StudentRegister = () => {
                       bg: useColorModeValue('purple.600', 'purple.800'),
                       color: useColorModeValue('white', 'white'),
                     }}
-                    onClick={() => {
-                      setStep(step - 1);
-                      setProgress(progress - 20); // Decrement by 20
-                    }}
+                    type="submit"
                   >
-                    Previous
-                  </Button>
-                )}
-                {step < 5 && (
-                  <Button
-                    variant="outline"
-                    colorScheme="purple"
-                    ml={3}
-                    _hover={{
-                      bg: useColorModeValue('purple.600', 'purple.800'),
-                      color: useColorModeValue('white', 'white'),
-                    }}
-                    onClick={async () => {
-                      const isValid = await trigger();
-                      if (isValid) {
-                        setStep(step + 1);
-                        setProgress(progress + 20); // Increment by 20
-                      }
-                    }}
-                  >
-                    Next
+                    Submit
                   </Button>
                 )}
               </Flex>
-              {step === 5 && (
-                <Button
-                  variant="outline"
-                  colorScheme="purple"
-                  _hover={{
-                    bg: useColorModeValue('purple.600', 'purple.800'),
-                    color: useColorModeValue('white', 'white'),
-                  }}
-                  type="submit"
-                >
-                  Submit
-                </Button>
-              )}
-            </Flex>
-          </ButtonGroup>
-        </form>
-      </Box>
-    </Flex>
+            </ButtonGroup>
+          </form>
+        </Box>
+      </Flex>
+    </div>
+
   );
 };
 

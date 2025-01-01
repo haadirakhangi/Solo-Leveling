@@ -17,6 +17,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { Navbar } from '../../components/navbar';
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from 'react-router-dom';
@@ -122,12 +123,12 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
       <FormControl isInvalid={!!errors.gender} mb="4%">
         <FormLabel>Gender</FormLabel>
         <RadioGroup colorScheme='purple' id="gender" name="gender">
-            <Stack direction="row">
-              <Radio value="male" {...register('gender')}>Male</Radio>
-              <Radio value="female" {...register('gender')}>Female</Radio>
-              <Radio value="other" {...register('gender')}>Other</Radio>
-            </Stack>
-          </RadioGroup>
+          <Stack direction="row">
+            <Radio value="male" {...register('gender')}>Male</Radio>
+            <Radio value="female" {...register('gender')}>Female</Radio>
+            <Radio value="other" {...register('gender')}>Other</Radio>
+          </Stack>
+        </RadioGroup>
         <FormErrorMessage>{errors.gender && errors.gender.message}</FormErrorMessage>
       </FormControl>
 
@@ -249,58 +250,70 @@ const TeacherRegister = () => {
   };
 
   return (
-    <Flex bg={useColorModeValue('purple.200', 'purple.800')} width='full' align='center' justifyContent='center' minHeight={"79vh"}>
-      <Box
-        rounded="lg"
-        my={10}
-        bg={useColorModeValue('white', 'gray.900')}
-        shadow="dark-lg"
-        maxWidth={800}
-        borderColor={useColorModeValue('purple.400', 'gray.900')}
-        p={6}>
-        <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && <Form1 register={register} errors={errors} />}
-          {step === 2 && <Form2 register={register} errors={errors} />}
-          {step === 3 && <Form3 register={register} errors={errors} />}
-          <ButtonGroup mt="5%" w="100%">
-            <Flex w="100%" justifyContent="space-between">
-              {step > 1 && (
-                <Button
-                  variant="outline"
-                  colorScheme="purple"
-                  onClick={() => {
-                    setStep(step - 1);
-                    setProgress(progress - 50);
-                  }}
-                >
-                  Previous
-                </Button>
-              )}
-              {step < 3 && (
-                <Button
-                  variant="outline"
-                  colorScheme="purple"
-                  onClick={async () => {
-                    const isValid = await trigger();
-                    if (isValid) {
-                      setStep(step + 1);
-                      setProgress(progress + 33); // Update progress increment accordingly
-                    }
-                  }}
-                >
-                  Next
-                </Button>
-              )}
-              {step === 3 && (
-                <Button variant="outline" colorScheme="purple" type="submit">Submit</Button>
-              )}
+    <div>
+      <Navbar />
+      <Flex bg={useColorModeValue('purple.200', 'purple.800')} direction="column" width='full' align='center' justifyContent='center' minHeight={"79vh"}>
+        <Text fontSize="4xl"
+                  fontWeight="bold"
+                  color={useColorModeValue('purple.800', 'purple.100')}
+                  mb={8}
+                  mt={8}
+                  >
+                  Teacher Registration
+                </Text>
+        <Box
+          rounded="lg"
+          mb={20}
+          bg={useColorModeValue('white', 'gray.900')}
+          shadow="dark-lg"
+          maxWidth={800}
+          borderColor={useColorModeValue('purple.400', 'gray.900')}
+          p={6}>
+          <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {step === 1 && <Form1 register={register} errors={errors} />}
+            {step === 2 && <Form2 register={register} errors={errors} />}
+            {step === 3 && <Form3 register={register} errors={errors} />}
+            <ButtonGroup mt="5%" w="100%">
+              <Flex w="100%" justifyContent="space-between">
+                {step > 1 && (
+                  <Button
+                    variant="outline"
+                    colorScheme="purple"
+                    onClick={() => {
+                      setStep(step - 1);
+                      setProgress(progress - 50);
+                    }}
+                  >
+                    Previous
+                  </Button>
+                )}
+                {step < 3 && (
+                  <Button
+                    variant="outline"
+                    colorScheme="purple"
+                    onClick={async () => {
+                      const isValid = await trigger();
+                      if (isValid) {
+                        setStep(step + 1);
+                        setProgress(progress + 33); // Update progress increment accordingly
+                      }
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+                {step === 3 && (
+                  <Button variant="outline" colorScheme="purple" type="submit">Submit</Button>
+                )}
 
-            </Flex>
-          </ButtonGroup>
-        </form>
-      </Box>
-    </Flex>
+              </Flex>
+            </ButtonGroup>
+          </form>
+        </Box>
+      </Flex>
+    </div>
+
   );
 };
 
