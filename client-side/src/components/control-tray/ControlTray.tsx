@@ -33,6 +33,7 @@ function ControlTray({ isRecording, startRecording, stopRecording }: ControlTray
     }
   };
 
+
   // Use getUserMedia to capture microphone and prevent audio feedback
   useEffect(() => {
     const onData = (base64: string) => {
