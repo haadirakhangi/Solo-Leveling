@@ -17,43 +17,57 @@ const MultimodalLive = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+    const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
 
     const startRecording = async () => {
         try {
-            // Capture video and microphone audio (user media)
-            const stream = await navigator.mediaDevices.getUserMedia({
+            // Capture screen video and audio (including system audio)
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
-                audio: true,
+                audio: true, // System audio is captured if supported
             });
-            setVideoStream(stream);
+            setScreenStream(screenStream); // Save screen stream for later stopping
+
+            // Capture microphone audio and video
+            const userMediaStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: true,
+            });
+            setVideoStream(userMediaStream);
 
             if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-
-                // Mute video audio playback to prevent feedback to speakers
-                videoRef.current.muted = true;
+                videoRef.current.srcObject = userMediaStream;
+                videoRef.current.muted = true; // Prevent feedback
             }
 
-            // Capture system audio from the browser (e.g., audio from the video element)
+            // Combine the screen and user microphone streams
             const audioContext = new AudioContext();
             const destination = audioContext.createMediaStreamDestination();
 
-            // Create a media element source (for audio coming from the browser's video or audio elements)
-            const mediaElementSource = audioContext.createMediaElementSource(videoRef.current!); // assuming you are using a video element
-            mediaElementSource.connect(destination);
+            // Create audio sources for both screen and microphone
+            const screenAudioSource = audioContext.createMediaStreamSource(screenStream);
+            const micAudioSource = audioContext.createMediaStreamSource(userMediaStream);
 
-            // Combine microphone and system audio tracks
+            // Connect the audio sources to the audio context's destination
+            screenAudioSource.connect(destination);
+            micAudioSource.connect(destination);
+
+            // Now, the mixed audio is available in the destination.stream
             const combinedStream = new MediaStream([
-                ...stream.getTracks(), // Add video and microphone audio tracks
-                ...destination.stream.getTracks(), // Add the system audio tracks
+                ...screenStream.getVideoTracks(), // Screen video
+                ...userMediaStream.getVideoTracks(), // User video
+                ...destination.stream.getAudioTracks(), // Mixed audio (screen + microphone)
             ]);
 
+            // Initialize the media recorder
             const recorder = new MediaRecorder(combinedStream);
             setMediaRecorder(recorder);
 
             const chunks: Blob[] = [];
             recorder.ondataavailable = (event) => {
-                chunks.push(event.data);
+                if (event.data.size > 0) {
+                    chunks.push(event.data);
+                }
             };
 
             recorder.onstop = async () => {
@@ -65,8 +79,8 @@ const MultimodalLive = () => {
 
             recorder.start();
             setIsRecording(true);
-        } catch (err) {
-            console.error("Error accessing media devices:", err);
+        } catch (error) {
+            console.error("Error starting recording:", error);
         }
     };
 
@@ -74,6 +88,11 @@ const MultimodalLive = () => {
         if (mediaRecorder && mediaRecorder.state === "recording") {
             mediaRecorder.stop();
         }
+
+        if (screenStream) {
+            screenStream.getTracks().forEach((track) => track.stop());
+        }
+
         if (videoStream) {
             videoStream.getTracks().forEach((track) => track.stop());
         }
