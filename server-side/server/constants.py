@@ -5,6 +5,7 @@ from api.gemini_client import GeminiProvider
 from api.serper_client import SerperProvider
 from api.tavily_client import TavilyProvider
 from core.evaluator import Evaluator
+from core.quiz_generator import QuizGenerator
 import os
 
 DEVICE_TYPE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -16,4 +17,5 @@ EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 GEMINI_CLIENT = GeminiProvider()
 TAVILY_CLIENT = TavilyProvider()
 EVALUATOR = Evaluator()
+QUIZ_GENERATOR = QuizGenerator()
 USER_DOCS_PATH = os.path.join('server', 'user_docs')
