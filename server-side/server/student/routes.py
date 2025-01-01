@@ -14,23 +14,20 @@
 # from langchain_community.document_loaders import PyPDFLoader
 # from api.serper_client import SerperProvider
 # from server.utils import ServerUtils
-# from pymongo import MongoClient
-# from pymongo.server_api import ServerApi
-# from bson.objectid import ObjectId
 # from urllib.parse import quote_plus
 # import json
 import os
+from bson.objectid import ObjectId
 from gridfs import GridFS
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, session
 from flask_cors import cross_origin
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from urllib.parse import quote_plus
 from io import BytesIO
 from bson import ObjectId
-from PyPDF2 import PdfReader
 import fitz
 from server.constants import *
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -76,11 +73,14 @@ def register():
         resume_id = fs.put(resume, filename=filename)
 
         hashed_password = generate_password_hash(data["password"])
-
+        top_skills = data["top_skills"].split(",")
+        interests = data["interests"].split(",")
         # Insert student data into MongoDB
         student_data = {field: data[field] for field in required_fields}
         student_data['password'] = hashed_password # Store the hashed password
         student_data['resume_id'] = str(resume_id)  # Save the GridFS file ID
+        student_data['top_skills'] = top_skills
+        student_data['interests'] = interests
 
         std_profile_coll.insert_one(student_data)
 
@@ -102,21 +102,24 @@ def login():
         student = std_profile_coll.find_one({"email": email})
         if student is None or not check_password_hash(student["password"], password):
             return jsonify({"error": "Invalid email or password"}), 401
-
+        
+        session["student_id"] = str(student["_id"])
         return jsonify({"message": "Login successful", "student_id": str(student["_id"])}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@students.route('/get-resume-text', methods=['POST'])
+@students.route('/get-resume-text', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def get_resume():
     try:
-        data: dict = request.json
-        student_id = data.get("student_id")
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+        student_id = session.get("student_id")
         
         # Retrieve the student record
-        student = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        student : dict= std_profile_coll.find_one({"_id": ObjectId(student_id)})
         if not student:
             return jsonify({"error": "Student not found"}), 404
 
@@ -138,6 +141,37 @@ def get_resume():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@students.route('/knowledge-assessment', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def skill_assessment():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+        student_id = session.get("student_id")
+        student : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        top_skills = student.get("top_skills")
+        questions = QUIZ_GENERATOR.generate_quiz_for_hard_skills(top_skills)
+        return jsonify({"quiz_questions": questions}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@students.route('/interest-assessment', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def interest_assessment():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+        student_id = session.get("student_id")
+        student : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        interests = student.get("interests")
+        questions = QUIZ_GENERATOR.generate_quiz_for_hard_skills(interests)
+        return jsonify({"quiz_questions": questions}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @students.route('/analyze-conversation', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def anaylze_conversation():
