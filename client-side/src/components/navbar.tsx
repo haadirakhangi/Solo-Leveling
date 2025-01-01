@@ -150,6 +150,18 @@ export const Navbar = () => {
                                 </HStack>
                             </NavLink>
 
+                            <NavLink href="/student/soft-skill-quiz">
+                                <HStack spacing={2}>
+                                    <span>Soft Skill</span>
+                                </HStack>
+                            </NavLink>
+
+                            <NavLink href="/student/hard-skill-quiz">
+                                <HStack spacing={2}>
+                                    <span>Hard Skill</span>
+                                </HStack>
+                            </NavLink>
+
                             <Box
                                 px={2}
                                 py={1}

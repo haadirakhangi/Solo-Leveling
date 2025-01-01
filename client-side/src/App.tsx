@@ -5,6 +5,7 @@ import SoftSkillQuiz from "./pages/SoftSkillQuiz";
 import MultimodalLive from "./pages/MultimodalLive";
 import StudentRegister from "./pages/register/StudentRegister";
 import TeacherRegister from "./pages/register/TeacherRegister";
+import HardSkillQuiz from "./pages/HardSkillQuiz";
 // import "./pages/student/content/i18n"
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
       <Route element={<StudentRegister />} path="/register/student" />
       <Route element={<TeacherRegister />} path="/register/teacher" />
       <Route element={<HomePage />} path="/" />
-      <Route element={<SoftSkillQuiz />} path="/skill-quiz" />
+      <Route element={<SoftSkillQuiz />} path="/student/soft-skill-quiz" />
+      <Route element={<HardSkillQuiz />} path="/student/hard-skill-quiz" />
       <Route element={<MultimodalLive />} path="/student/interview" />
       
 

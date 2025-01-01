@@ -4,7 +4,9 @@ import { LiveAPIProvider } from "../contexts/LiveAPIContext";
 import { Altair } from "../components/altair/Altair";
 import ControlTray from "../components/control-tray/ControlTray";
 import cn from "classnames";
-import axios from "axios"; // For sending video to backend
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@chakra-ui/react';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -18,6 +20,8 @@ const MultimodalLive = () => {
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
+    const navigate = useNavigate();
+    const toast = useToast();
 
     const startRecording = async () => {
         try {
@@ -101,25 +105,43 @@ const MultimodalLive = () => {
 
     const sendVideoToBackend = async (videoBlob: Blob) => {
         const formData = new FormData();
-        formData.append("video", videoBlob, "recording.webm");
+        formData.append("video_file", videoBlob, "recording.webm");
 
         try {
-            await axios.post("/api/student/video-upload", formData, {
+            const response = await axios.post("/api/student/analyze-conversation", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            console.log("Video successfully uploaded.");
+
+            // Check if the response status is 200 (successful)
+            if (response.status === 200) {
+                navigate('/'); 
+                toast({
+                    title: "Successfully analyzed",
+                    description: "Your video was analyzed successfully.",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
         } catch (error) {
             console.error("Error uploading video:", error);
+            toast({
+                title: "Error uploading video",
+                description: "There was an issue uploading the video. Please try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
     const downloadVideo = (blob: Blob) => {
-        const url = URL.createObjectURL(blob); // Create an object URL for the Blob
-        const link = document.createElement("a"); // Create a temporary anchor element
-        link.href = url; // Set the download URL
-        link.download = "recording.webm"; // Set the default file name
-        link.click(); // Trigger the download
-        URL.revokeObjectURL(url); // Clean up the object URL after download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "recording.webm";
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     return (

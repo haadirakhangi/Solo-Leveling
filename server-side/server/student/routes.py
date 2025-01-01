@@ -192,6 +192,7 @@ def anaylze_conversation():
         video_file.save(video_file_path)
         scenario = data.get("scenario")
         response = EVALUATOR.evaluate_video_for_soft_skills(video_file_path, scenario)
+        print(response)
         return jsonify(response), 200
 
     except Exception as e:
