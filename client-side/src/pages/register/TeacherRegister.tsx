@@ -62,7 +62,7 @@ const form3Schema = yup.object().shape({
 const Form1 = ({ register, errors }: { register: any; errors: any }) => {
   return (
     <>
-      <Text w="80vh" className='feature-heading' fontSize={'50px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
+      <Text w="80vh" className='feature-heading' fontSize={'30px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
         <b>Basic Details</b>
       </Text>
       <Flex>
@@ -99,7 +99,7 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
 const Form2 = ({ register, errors }: { register: any; errors: any }) => {
   return (
     <>
-      <Text w="80vh" className='feature-heading' fontSize={'50px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
+      <Text w="80vh" className='feature-heading' fontSize={'30px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
         <b>Personal Details</b>
       </Text>
       <FormControl isInvalid={!!errors.country} mb="4%">
@@ -144,7 +144,7 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 const Form3 = ({ register, errors }: { register: any; errors: any }) => {
   return (
     <>
-      <Text w="80vh" className='feature-heading' fontSize={'50px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
+      <Text w="80vh" className='feature-heading' fontSize={'30px'} color={useColorModeValue('purple.600', 'purple.500')} textAlign="center" fontWeight="normal" mb="2%">
         <b>Professional Details</b>
       </Text>
       <FormControl isInvalid={!!errors.collegeName} mb="4%">

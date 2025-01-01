@@ -468,29 +468,29 @@ const StudentRegister = () => {
   const onSubmit = async (data: { [key: string]: any }) => {
     try {
       const formData = new FormData();
-      formData.append('fullName', data.fullName);
+      formData.append('full_name', data.fullName);
       formData.append('age', data.age);
       formData.append('location', data.location);
-      formData.append('preferredLanguage', data.preferredLanguage);
+      formData.append('preferred_language', data.preferredLanguage);
       formData.append('email', data.email);
       formData.append('password', data.password);
 
       // Append all values from Form 2 (Student Details)
       formData.append('gender', data.gender);
-      formData.append('highestEducation', data.highestEducation);
-      formData.append('fieldOfStudy', data.fieldOfStudy);
+      formData.append('highest_education', data.highestEducation);
+      formData.append('field_of_study', data.fieldOfStudy);
 
       // Append all values from Form 3 (Dream Job & Interests)
-      formData.append('dreamJob', data.dreamJob);
-      formData.append('interest', data.interest);
+      formData.append('dream_job', data.dreamJob);
+      formData.append('interests', data.interest);
 
       // Append all values from Form 4 (Learning Challenges & Motivation)
       formData.append('challenges', data.challenges);
       formData.append('motivation', data.motivation);
 
       // Append all values from Form 5 (Skills and Experience)
-      formData.append('platformsUsed', data.platformsUsed);
-      formData.append('topSkills', data.topSkills);
+      formData.append('learning_platforms', data.platformsUsed);
+      formData.append('top_skills', data.topSkills);
 
       // Handle file upload for resume
       if (data.resume && data.resume[0]) {
@@ -546,7 +546,7 @@ const StudentRegister = () => {
         align="center"
         justifyContent="center"
         direction="column"
-        minHeight={'79vh'}
+        minHeight={'100vh'}
       >
         <Text fontSize="4xl"
           fontWeight="bold"

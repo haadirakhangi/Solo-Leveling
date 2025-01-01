@@ -58,6 +58,7 @@ def register():
         # Validate required fields
         missing_fields = [field for field in required_fields if field not in data]
         if missing_fields:
+            print("Missing fields",missing_fields)
             return jsonify({"error": "Missing fields", "fields": missing_fields}), 400
 
         # Handle file upload
@@ -84,7 +85,7 @@ def register():
 
         std_profile_coll.insert_one(student_data)
 
-        return jsonify({"message": "Student registered successfully"}), 201
+        return jsonify({"message": "Student registered successfully", "response": True}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -104,7 +105,7 @@ def login():
             return jsonify({"error": "Invalid email or password"}), 401
         
         session["student_id"] = str(student["_id"])
-        return jsonify({"message": "Login successful", "student_id": str(student["_id"])}), 200
+        return jsonify({"message": "Login successful", "student_id": str(student["_id"]),"response": True}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
