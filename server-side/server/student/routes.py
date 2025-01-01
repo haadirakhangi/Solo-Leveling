@@ -203,3 +203,33 @@ def anaylze_conversation():
 def logout():
     session.clear()
     return jsonify({"message": "User logged out successfully", "response":True}), 200
+
+@students.route('/submit-quiz-scores', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def submit_quiz_score():
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"error": "Hard Quiz assessment data is missing"}), 400
+        
+        student_id = session.get("student_id","something")
+
+        if not student_id:
+            return jsonify({"error": "User not logged in or session expired"}), 401
+
+        # Update the user's document in the MongoDB collection
+        result = std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},  # Match the user by their ID
+            {"$set": {"hard_quiz_assessment": data}},  # Update or add quiz_assessment field
+            upsert=False  # Prevent creating a new document if user does not exist
+        )
+
+        # Check if the document was updated
+        if result.matched_count == 0:
+            print(f"something wrong--> {ObjectId(student_id)}")
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({"message": "Hard Quiz assessment updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

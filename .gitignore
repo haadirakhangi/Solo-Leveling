@@ -32,6 +32,8 @@ lab-manuals/
 server/downloads
 presentations/
 videos/
+#specific files
+temp.txt
 
 # CLIENT-SIDE
 logs

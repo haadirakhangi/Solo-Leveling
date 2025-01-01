@@ -18,8 +18,8 @@ const QuizPage: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [knowledgeQuestions, setKnowledgeQuestions] = useState<Question[]>([]);
   const [interestQuestions, setInterestQuestions] = useState<Question[]>([]);
-  const [knowledgeResponses, setKnowledgeResponses] = useState<{ question: string; answer: string }[]>([]);
-  const [interestResponses, setInterestResponses] = useState<{ question: string; answer: string }[]>([]);
+  const [knowledgeResponses, setKnowledgeResponses] = useState<{skill_area: string, question: string; answer: string }[]>([]);
+  const [interestResponses, setInterestResponses] = useState<{skill_area: string, question: string; answer: string }[]>([]);
   const [timeLeft, setTimeLeft] = useState(60);
   const [knowledgeScore, setKnowledgeScore] = useState(0);
   const [interestScore, setInterestScore] = useState(0);
@@ -84,6 +84,7 @@ const QuizPage: React.FC = () => {
       setKnowledgeResponses((prev) => [
         ...prev,
         {
+          skill_area: currentQuestion.skill_area,
           question: currentQuestion.question,
           answer: defaultAnswer,
         },
@@ -97,6 +98,7 @@ const QuizPage: React.FC = () => {
       setInterestResponses((prev) => [
         ...prev,
         {
+          skill_area: currentQuestion.skill_area,
           question: currentQuestion.question,
           answer: defaultAnswer,
         },
@@ -123,12 +125,12 @@ const QuizPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       // Send both scores to the backend
-      await axios.post('/api/submit-quiz-scores', {
+      await axios.post('/api/student/submit-quiz-scores', {
         knowledgeScore,
         interestScore,
         knowledgeResponses,
         interestResponses,
-      });
+      }, { withCredentials: true });
 
       toast({
         title: 'Quiz submitted successfully!',
@@ -146,6 +148,13 @@ const QuizPage: React.FC = () => {
       });
     }
   };
+
+  console.log({
+    knowledgeScore,
+    interestScore,
+    knowledgeResponses,
+    interestResponses,
+  });
 
   if (loading) {
     return (
