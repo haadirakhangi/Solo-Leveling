@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint,session
 from flask_cors import cross_origin
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
@@ -61,3 +61,9 @@ def login():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@teachers.route('/logout', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def logout():
+    session.clear()
+    return jsonify({"message": "User logged out successfully", "response":True}), 200

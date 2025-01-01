@@ -15,7 +15,7 @@ function App() {
       <Route element={<TeacherRegister />} path="/register/teacher" />
       <Route element={<HomePage />} path="/" />
       <Route element={<SoftSkillQuiz />} path="/skill-quiz" />
-      <Route element={<MultimodalLive />} path="/interview" />
+      <Route element={<MultimodalLive />} path="/student/interview" />
       
 
       

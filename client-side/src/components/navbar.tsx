@@ -13,9 +13,8 @@ import {
     MenuItem,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { FaHome, FaSignInAlt, FaUserPlus, FaChalkboardTeacher } from 'react-icons/fa';
-import { RiAiGenerate } from "react-icons/ri";
-import { MdOutlineTravelExplore, MdCreateNewFolder, MdLogout } from "react-icons/md";
+import { FaHome, FaSignInAlt, FaUserPlus} from 'react-icons/fa';
+import { MdCreateNewFolder, MdLogout } from "react-icons/md";
 import { PiStudent } from "react-icons/pi";
 import { GiTeacher } from "react-icons/gi";
 import { Logo } from './icons';
@@ -145,32 +144,11 @@ export const Navbar = () => {
                                 </HStack>
                             </NavLink>
 
-                            <Menu>
-                                <MenuButton
-                                    px={2}
-                                    py={1}
-                                    className="feature-heading"
-                                    rounded="md"
-                                    color={"white"}
-                                    _hover={{ transform: 'scale(1.1)', color: 'purple.800', bg: 'white', textDecoration: 'none' }}
-                                    transition="transform 0.3s ease-in-out"
-                                >
-                                    <HStack spacing={2}>
-                                        <RiAiGenerate size={24} />
-                                        <span>Generate</span>
-                                    </HStack>
-                                </MenuButton>
-                                <MenuList>
-                                    <MenuItem onClick={() => navigate("/student/explore")}>
-                                        <MdOutlineTravelExplore size={20} style={{ marginRight: 8 }} />
-                                        <span>Smart Courses</span>
-                                    </MenuItem>
-                                    <MenuItem onClick={() => navigate("/student/shared-courses")}>
-                                        <FaChalkboardTeacher size={20} style={{ marginRight: 8 }} />
-                                        <span>View Shared Courses</span>
-                                    </MenuItem>
-                                </MenuList>
-                            </Menu>
+                            <NavLink href="/student/interview">
+                                <HStack spacing={2}>
+                                    <span>Interview</span>
+                                </HStack>
+                            </NavLink>
 
                             <Box
                                 px={2}
