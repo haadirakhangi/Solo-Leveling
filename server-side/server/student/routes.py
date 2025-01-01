@@ -31,6 +31,7 @@ from urllib.parse import quote_plus
 from io import BytesIO
 from bson import ObjectId
 from PyPDF2 import PdfReader
+import fitz
 from server.constants import *
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -109,10 +110,11 @@ def login():
 
 @students.route('/get-resume-text', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def get_resume(student_id):
+def get_resume():
     try:
-        data : dict = request.json
+        data: dict = request.json
         student_id = data.get("student_id")
+        
         # Retrieve the student record
         student = std_profile_coll.find_one({"_id": ObjectId(student_id)})
         if not student:
@@ -124,12 +126,12 @@ def get_resume(student_id):
             return jsonify({"error": "Resume not found for this student"}), 404
 
         resume_file = fs.get(ObjectId(resume_id))
-
-        # Parse the PDF using PyPDF2
         resume_content = BytesIO(resume_file.read())
-        pdf_reader = PdfReader(resume_content)
-        parsed_text = "".join([page.extract_text() for page in pdf_reader.pages])
 
+        # Parse the PDF using pymupdf
+        pdf_reader = fitz.open(stream=resume_content, filetype="pdf")
+        parsed_text = "".join([page.get_text() for page in pdf_reader])
+        
         # Return the parsed text of the resume
         return jsonify({"resume_text": parsed_text}), 200
 
@@ -140,7 +142,7 @@ def get_resume(student_id):
 @cross_origin(supports_credentials=True)
 def anaylze_conversation():
     try:
-        data : dict = request.json
+        data : dict = request.form
         if 'video_file' not in request.files:
             return jsonify({"error": "Video file is required"}), 400
         else:

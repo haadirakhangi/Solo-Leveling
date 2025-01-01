@@ -2,8 +2,6 @@ import os
 from gtts import gTTS
 from deep_translator import GoogleTranslator
 from flask import session
-from models.student_schema import Module
-from models.teacher_schema import Course as TeacherCourse
 from lingua import LanguageDetectorBuilder
 import random
 import string
@@ -146,23 +144,23 @@ class ServerUtils:
             if course_collection.find_one({"course_code": course_code}) is None:
                 return course_code
 
-class AssistantUtils:
-    @staticmethod
-    def get_page_context(index: int = 1):
-        '''Get information about the current page that the user is exploring. Used to answer user queries related to the current page they're exploring.
-        Args:
-            index (int): Index of the submodule.
-        '''
-        module_id = session.get("module_id", None)
-        module = Module.query.get(module_id)
-        data = module.submodule_content[index]
-        all_text = (
-        f"{data['subject_name']}\n"
-        f"{data['title_for_the_content']}\n"
-        f"{data['content']}\n"
-        )
+# class AssistantUtils:
+#     @staticmethod
+#     def get_page_context(index: int = 1):
+#         '''Get information about the current page that the user is exploring. Used to answer user queries related to the current page they're exploring.
+#         Args:
+#             index (int): Index of the submodule.
+#         '''
+#         module_id = session.get("module_id", None)
+#         module = Module.query.get(module_id)
+#         data = module.submodule_content[index]
+#         all_text = (
+#         f"{data['subject_name']}\n"
+#         f"{data['title_for_the_content']}\n"
+#         f"{data['content']}\n"
+#         )
 
-        for subsection in data['subsections']:
-            all_text += f"{subsection['title']}\n{subsection['content']}\n"
-        print("submodule_content------------------------",all_text)
-        return all_text
+#         for subsection in data['subsections']:
+#             all_text += f"{subsection['title']}\n{subsection['content']}\n"
+#         print("submodule_content------------------------",all_text)
+#         return all_text
