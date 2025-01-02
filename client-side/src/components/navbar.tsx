@@ -137,7 +137,7 @@ export const Navbar = () => {
                     )}
                     {studentAuthenticated && (
                         <>
-                            <NavLink href="/student/home">
+                            <NavLink href="/student/dashboard">
                                 <HStack spacing={2}>
                                     <FaHome size={24} />
                                     <span>Home</span>

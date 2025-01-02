@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, Flex, Text, RadioGroup, Radio, VStack, Progress } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 interface Question {
   skill_area: string;
@@ -12,14 +13,14 @@ interface Question {
 
 const QuizPage: React.FC = () => {
   const toast = useToast();
-
+  const navigate = useNavigate();
   // State variables
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState('');
   const [knowledgeQuestions, setKnowledgeQuestions] = useState<Question[]>([]);
   const [interestQuestions, setInterestQuestions] = useState<Question[]>([]);
-  const [knowledgeResponses, setKnowledgeResponses] = useState<{skill_area: string, question: string; answer: string }[]>([]);
-  const [interestResponses, setInterestResponses] = useState<{skill_area: string, question: string; answer: string }[]>([]);
+  const [knowledgeResponses, setKnowledgeResponses] = useState<{ skill_area: string; question: string; answer: string }[]>([]);
+  const [interestResponses, setInterestResponses] = useState<{ skill_area: string; question: string; answer: string }[]>([]);
   const [timeLeft, setTimeLeft] = useState(60);
   const [knowledgeScore, setKnowledgeScore] = useState(0);
   const [interestScore, setInterestScore] = useState(0);
@@ -56,7 +57,7 @@ const QuizPage: React.FC = () => {
     }, 1000);
 
     if (timeLeft === 0) {
-      handleNext("None");
+      handleNext('None');
     }
 
     return () => clearInterval(timer);
@@ -94,7 +95,7 @@ const QuizPage: React.FC = () => {
         setKnowledgeScore(knowledgeScore + 1);
       }
     } else {
-      const currentQuestion = interestQuestions[currentQuestionIndex];
+      const currentQuestion = interestQuestions[currentQuestionIndex - knowledgeQuestions.length];
       setInterestResponses((prev) => [
         ...prev,
         {
@@ -112,11 +113,13 @@ const QuizPage: React.FC = () => {
     setSelectedOption('');
     setTimeLeft(60);
 
-    if (currentQuestionIndex < (quizType === 'knowledge' ? knowledgeQuestions : interestQuestions).length - 1) {
+    if (quizType === 'knowledge' && currentQuestionIndex < knowledgeQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else if (quizType === 'knowledge') {
       setQuizType('interest'); // Switch to interest quiz
-      setCurrentQuestionIndex(0); // Reset index for interest quiz
+      setCurrentQuestionIndex((prev) => prev + 1);
+    } else if (currentQuestionIndex < knowledgeQuestions.length + interestQuestions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       handleSubmit(); // Submit after interest quiz
     }
@@ -124,13 +127,36 @@ const QuizPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // Send both scores to the backend
-      await axios.post('/api/student/submit-quiz-scores', {
-        knowledgeScore,
-        interestScore,
-        knowledgeResponses,
-        interestResponses,
-      }, { withCredentials: true });
+      // Calculate scores grouped by skill area for knowledge quiz
+      const knowledgeScores = knowledgeQuestions.reduce((acc, question, index) => {
+        acc[question.skill_area] = acc[question.skill_area] || { score: 0, maxScore: 0 };
+        acc[question.skill_area].maxScore += 1; // Increment max score for this skill area
+        const response = knowledgeResponses[index];
+        if (response && response.answer === question.answer) {
+          acc[question.skill_area].score += 1; // Increment score if the answer is correct
+        }
+        return acc;
+      }, {} as Record<string, { score: number; maxScore: number }>);
+
+      // Calculate scores grouped by skill area for interest quiz
+      const interestScores = interestQuestions.reduce((acc, question, index) => {
+        acc[question.skill_area] = acc[question.skill_area] || { score: 0, maxScore: 0 };
+        acc[question.skill_area].maxScore += 1; // Increment max score for this skill area
+        const response = interestResponses[index];
+        if (response && response.answer === question.answer) {
+          acc[question.skill_area].score += 1; // Increment score if the answer is correct
+        }
+        return acc;
+      }, {} as Record<string, { score: number; maxScore: number }>);
+
+      await axios.post(
+        '/api/student/submit-quiz-scores',
+        {
+          knowledgeScores,
+          interestScores,
+        },
+        { withCredentials: true }
+      );
 
       toast({
         title: 'Quiz submitted successfully!',
@@ -138,6 +164,8 @@ const QuizPage: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+
+      navigate('/');
     } catch (error) {
       toast({
         title: 'Failed to submit quiz.',
@@ -149,18 +177,11 @@ const QuizPage: React.FC = () => {
     }
   };
 
-  console.log({
-    knowledgeScore,
-    interestScore,
-    knowledgeResponses,
-    interestResponses,
-  });
-
   if (loading) {
     return (
       <Flex direction="column" align="center" justify="center" h="100vh" bg="gray.100">
         <Text fontSize="xl" color="purple.700">
-          Loading questions...
+          Generating questions...
         </Text>
         <Progress size="sm" isIndeterminate colorScheme="purple" w="100%" />
       </Flex>
@@ -170,7 +191,7 @@ const QuizPage: React.FC = () => {
   const currentQuestion =
     quizType === 'knowledge'
       ? knowledgeQuestions[currentQuestionIndex]
-      : interestQuestions[currentQuestionIndex];
+      : interestQuestions[currentQuestionIndex - knowledgeQuestions.length];
 
   return (
     <Flex direction="column" align="center" justify="center" position="relative" h="100vh" bg="gray.100">
@@ -181,7 +202,7 @@ const QuizPage: React.FC = () => {
         <Progress value={(timeLeft / 60) * 100} colorScheme="purple" size="sm" borderRadius="md" mb="4" />
 
         <Text fontSize="2xl" fontWeight="bold" mb="4" color="purple.700">
-          {quizType === 'knowledge' ? 'Knowledge Quiz' : 'Interest Quiz'}
+          Hard Skill Quiz
         </Text>
 
         <Text fontSize="lg" mb="2" color="purple.600">
@@ -198,13 +219,10 @@ const QuizPage: React.FC = () => {
           </VStack>
         </RadioGroup>
 
-        <Box mt="6" textAlign="right">
+        <Box mt="6" textAlign="center">
           <Button colorScheme="purple" onClick={() => handleNext()}>
-            {currentQuestionIndex ===
-              (quizType === 'knowledge' ? knowledgeQuestions : interestQuestions).length - 1
-              ? quizType === 'knowledge'
-                ? 'Next Quiz'
-                : 'Submit'
+            {currentQuestionIndex === knowledgeQuestions.length + interestQuestions.length - 1
+              ? 'Submit'
               : 'Next'}
           </Button>
         </Box>
