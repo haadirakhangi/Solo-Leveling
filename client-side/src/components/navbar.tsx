@@ -81,7 +81,7 @@ export const Navbar = () => {
     }, []);
 
     return (
-        <Box bg={"purple.700"} position="sticky" boxShadow={'0 5px 6px rgba(0, 0, 0, 0.4)'} paddingX={"20"} top={0} zIndex="sticky">
+        <Box bg={"purple.600"} position="sticky" boxShadow={'0 5px 6px rgba(0, 0, 0, 0.4)'} paddingX={"20"} top={0} zIndex="sticky">
             <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
                 <IconButton
                     size={'md'}
