@@ -247,33 +247,6 @@ def analyze_soft_skill_quiz():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.rout('/fetch-in-demand-skills', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def fetch_in_demand_skills():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        data : dict = request.json
-        job_role = data.get("job_role")
-        response = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
-        return jsonify(response), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@students.route('fetch-online-courses', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def fetch_online_courses():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        student_id = session.get("student_id")
-        data : dict = request.json
-        skills = data.get("skills")
-        courses = SERPER_CLIENT.find_courses(skills)
-        return jsonify({"courses": courses}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 @students.route('fetch-job-roles', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def fetch_job_roles():
@@ -290,7 +263,36 @@ def fetch_job_roles():
         
         job_roles_one = future_job_one.result()
         job_roles_two = future_job_two.result()
-        all_jobs = job_roles_one + job_roles_two
-        return jsonify({"job_roles":list(set(all_jobs))}), 200
+        all_jobs = {**job_roles_one, **job_roles_two}
+        return jsonify({"job_roles":all_jobs}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@students.rout('/skill-gap-analysis', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_in_demand_skills():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        job_role = data.get("job_role")
+        required_skills = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
+        students_current_skills = data.get("current_skills")
+        skill_gap_analysis = SKILLS_ANALYZER.analyze_skill_gap(job_role, students_current_skills, required_skills)
+        return jsonify({"required_skills":required_skills, "skill_gap_analysis": skill_gap_analysis}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('fetch-online-courses', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_online_courses():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        skills = data.get("required_skills")
+        courses = SERPER_CLIENT.find_courses(skills)
+        return jsonify({"courses": courses}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
