@@ -253,7 +253,7 @@ const MultimodalLive = () => {
                                                 playsInline
                                             />
                                         ) : (
-                                            <Box marginTop="-500px" border="1px" borderRadius="full" padding="20px" backgroundColor="#27272a" shadow="2xl">  
+                                            <Box border="1px" borderRadius="full" padding="20px" backgroundColor="#27272a" shadow="2xl">  
                                             <TfiCamera size="50px" color="gray"/>
                                             </Box>
                                         )}
