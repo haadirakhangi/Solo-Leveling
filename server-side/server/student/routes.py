@@ -247,7 +247,7 @@ def analyze_soft_skill_quiz():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.route('fetch-job-roles', methods=['GET'])
+@students.route('/fetch-job-roles', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def fetch_job_roles():
     try:
@@ -283,7 +283,7 @@ def fetch_in_demand_skills():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.route('fetch-online-courses', methods=['POST'])
+@students.route('/fetch-online-courses', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def fetch_online_courses():
     try:
