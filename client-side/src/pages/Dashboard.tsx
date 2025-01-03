@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
     ChakraProvider,
     Box,
@@ -17,17 +17,23 @@ import {
     ListItem,
     ListIcon,
     Table,
+    SlideFade,
+    Grid,
     Thead,
     Tbody,
     Tr,
     Th,
     Td,
     Center,
+    Avatar,
     Icon,
 } from '@chakra-ui/react';
+import { PieChart, Pie, Sector, Cell } from 'recharts';
 import { CheckCircleIcon, ArrowRightIcon } from '@chakra-ui/icons';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Navbar } from '../components/navbar';
+import RecommendedCard from '../components/RecommendedCard';
+
 
 const purpleTheme = extendTheme({
     ...theme,
@@ -39,6 +45,19 @@ const purpleTheme = extendTheme({
         },
     },
 });
+
+const recommendedCourses = [
+    {
+        source: "upGrad",
+        title: "PG Diploma in Data Science",
+        link: "https://www.upgrad.com/data-science-pgd-iiitb/",
+    },
+    {
+        source: "Coursera",
+        title: "Generative AI: Elevate Your",
+        link: "https://www.coursera.org/learn/generative-ai-elevate-your-data-science-career",
+    }
+];
 
 const jobRoles = [
     { role: 'Machine Learning Engineer', skills: ['Python', 'Tensorflow', 'Machine Learning'] },
@@ -52,6 +71,13 @@ const jobMarketData = [
     { skill: 'React', demand: 80 },
     { skill: 'Data Science', demand: 70 },
 ];
+
+const userInfo = {
+    name: 'John Doe',
+    age: 30,
+    gender: 'Male',
+    email: 'johndoe@example.com',
+};
 
 const careerPaths = [
     { year: 1, skillLevel: 20, milestone: 'Started Learning Basics' },
@@ -109,7 +135,60 @@ const interestData = Object.keys(userData.hardSkills.interestBased).map((skill) 
     Score: (userData.hardSkills.interestBased[skill].score / userData.hardSkills.interestBased[skill].maxScore) * 100,
 }));
 
+
+const renderActiveShape = (props) => {
+    const {
+        cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle,
+        fill, payload, percent, value,
+    } = props;
+    const RADIAN = Math.PI / 180;
+    const sin = Math.sin(-RADIAN * midAngle);
+    const cos = Math.cos(-RADIAN * midAngle);
+    const sx = cx + (outerRadius + 10) * cos;
+    const sy = cy + (outerRadius + 10) * sin;
+    const mx = cx + (outerRadius + 30) * cos;
+    const my = cy + (outerRadius + 30) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = cos >= 0 ? 'start' : 'end';
+
+    return (
+        <g>
+            <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{payload.name}</text>
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+            />
+            <Sector
+                cx={cx}
+                cy={cy}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                innerRadius={outerRadius + 6}
+                outerRadius={outerRadius + 10}
+                fill={fill}
+            />
+            <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+            <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`Score: ${value}`}</text>
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 20} textAnchor={textAnchor} fill="#999">
+                {`(${(percent * 100).toFixed(2)}%)`}
+            </text>
+        </g>
+    );
+};
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+
+
 const SkillAsses = () => {
+    const [activeIndex, setActiveIndex] = useState(0);
     const [selectedSoftSkillSection, setSelectedSoftSkillSection] = useState('mcq');
     const [mcqAnalysis, setMcqAnalysis] = useState({
         summary: "The user demonstrates a mixed profile of soft skills. While showing strengths in delegation and prioritization, there are areas needing improvement in terms of risk assessment and proactive communication.",
@@ -123,6 +202,9 @@ const SkillAsses = () => {
         }
     });
 
+    const onPieEnter = (_, index) => {
+        setActiveIndex(index);
+    };
     return (
         <Box>
             <Center>
@@ -146,7 +228,11 @@ const SkillAsses = () => {
                             <XAxis dataKey="name" />
                             <YAxis />
                             <Tooltip />
-                            <Bar dataKey="Score" fill="#805AD5" />
+                            <Bar dataKey="Score">
+                                {knowledgeData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>
@@ -156,12 +242,24 @@ const SkillAsses = () => {
                         Interest-Based Assessment
                     </Heading>
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={interestData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="Score" fill="#A0AEC0" />
-                        </BarChart>
+                        <PieChart>
+                            <Pie
+                                activeIndex={activeIndex}
+                                activeShape={renderActiveShape}
+                                data={interestData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="Score"
+                                onMouseEnter={onPieEnter}
+                            >
+                                {interestData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                        </PieChart>
                     </ResponsiveContainer>
                 </Box>
             </HStack>
@@ -263,6 +361,64 @@ const UserProfile = () => (
                 User Profile
             </Heading>
         </Center>
+        <Box borderWidth="1px" borderRadius="lg" p={6} mb={6} boxShadow="lg" mb={20} bg="purple.50">
+            <HStack spacing={6} align="center">
+                <Avatar name={userInfo.name} size="xl" />
+                <VStack align="start">
+                    <Text fontSize="2xl" fontWeight="bold" color="purple.600">{userInfo.name}</Text>
+                    <Text fontSize="md" color="purple.600"><b>Age:</b> {userInfo.age}</Text>
+                    <Text fontSize="md" color="purple.600"><b>Gender:</b> {userInfo.gender}</Text>
+                    <Text fontSize="md" color="purple.600"><b>Email:</b> {userInfo.email}</Text>
+                </VStack>
+            </HStack>
+        </Box>
+
+        <Heading size="lg" mb={4} mt={8} color="purple.700">
+            Strengths, Weaknesses & Areas for Improvement
+        </Heading>
+        <HStack align="start" spacing={8} mb={20}>
+            <VStack align="start">
+                <Heading size="sm" color="purple.600">
+                    Strengths
+                </Heading>
+                <List spacing={2}>
+                    {strengthsAndWeaknesses.strengths.map((strength, index) => (
+                        <ListItem key={index}>
+                            <ListIcon as={CheckCircleIcon} color="green.500" />
+                            {strength}
+                        </ListItem>
+                    ))}
+                </List>
+            </VStack>
+
+            <VStack align="start">
+                <Heading size="sm" color="purple.600">
+                    Weaknesses
+                </Heading>
+                <List spacing={2}>
+                    {strengthsAndWeaknesses.weaknesses.map((weakness, index) => (
+                        <ListItem key={index}>
+                            <ListIcon as={ArrowRightIcon} color="red.500" />
+                            {weakness}
+                        </ListItem>
+                    ))}
+                </List>
+            </VStack>
+
+            <VStack align="start">
+                <Heading size="sm" color="purple.600">
+                    Areas for Improvement
+                </Heading>
+                <List spacing={2}>
+                    {strengthsAndWeaknesses.improvementAreas.map((area, index) => (
+                        <ListItem key={index}>
+                            <ListIcon as={ArrowRightIcon} color="blue.500" />
+                            {area}
+                        </ListItem>
+                    ))}
+                </List>
+            </VStack>
+        </HStack>
 
         {/* AI Skill Matcher */}
         <Heading size="lg" mb={5} color="purple.700">
@@ -336,76 +492,48 @@ const UserProfile = () => (
                 ))}
             </VStack>
         </Box>
-
-        {/* Strengths, Weaknesses, and Areas for Improvement */}
-        <Heading size="lg" mb={4} mt={8} color="purple.700">
-            Strengths, Weaknesses & Areas for Improvement
-        </Heading>
-        <HStack align="start" spacing={8}>
-            <VStack align="start">
-                <Heading size="sm" color="purple.600">
-                    Strengths
-                </Heading>
-                <List spacing={2}>
-                    {strengthsAndWeaknesses.strengths.map((strength, index) => (
-                        <ListItem key={index}>
-                            <ListIcon as={CheckCircleIcon} color="green.500" />
-                            {strength}
-                        </ListItem>
-                    ))}
-                </List>
-            </VStack>
-
-            <VStack align="start">
-                <Heading size="sm" color="purple.600">
-                    Weaknesses
-                </Heading>
-                <List spacing={2}>
-                    {strengthsAndWeaknesses.weaknesses.map((weakness, index) => (
-                        <ListItem key={index}>
-                            <ListIcon as={ArrowRightIcon} color="red.500" />
-                            {weakness}
-                        </ListItem>
-                    ))}
-                </List>
-            </VStack>
-
-            <VStack align="start">
-                <Heading size="sm" color="purple.600">
-                    Areas for Improvement
-                </Heading>
-                <List spacing={2}>
-                    {strengthsAndWeaknesses.improvementAreas.map((area, index) => (
-                        <ListItem key={index}>
-                            <ListIcon as={ArrowRightIcon} color="blue.500" />
-                            {area}
-                        </ListItem>
-                    ))}
-                </List>
-            </VStack>
-        </HStack>
     </Box>
 );
 
+const RecommendCourses = () => {
+
+    return (
+        <>
+        <Center><Heading mb={4}>Top Recommendations for You</Heading></Center>
+        <Grid templateColumns={{ base: "repeat(1, 1fr)", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={6}>
+          {recommendedCourses.map((course, index) => (
+            <SlideFade in={true} transition={{ enter: { duration: 0.7 } }} offsetY='50px' key={index}>
+              <RecommendedCard
+                source={course.source}
+                title={course.title}
+                link={course.link}
+              />
+            </SlideFade>
+          ))}
+        </Grid>
+      </>
+    );
+};
 const Dashboard = () => (
     <ChakraProvider theme={purpleTheme}>
         <Navbar />
         <Box mx="auto" p={4}>
             <Tabs isFitted variant="enclosed">
                 <TabList mb="1em">
-                    <Tab _selected={{ bgColor: 'purple.500', color: 'white' }}>Skill Assesments</Tab>
                     <Tab _selected={{ bgColor: 'purple.500', color: 'white' }}>User Profile</Tab>
+                    <Tab _selected={{ bgColor: 'purple.500', color: 'white' }}>Skill Assesments</Tab>
                     <Tab _selected={{ bgColor: 'purple.500', color: 'white' }}>Recommended Courses</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>
-                        <SkillAsses />
-                    </TabPanel>
-                    <TabPanel>
+
                         <UserProfile />
                     </TabPanel>
                     <TabPanel>
-                        <Box>Coming Soon...</Box>
+                        <SkillAsses />
+                    </TabPanel>
+                    <TabPanel>
+                        <RecommendCourses/>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
