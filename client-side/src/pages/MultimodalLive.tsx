@@ -6,15 +6,27 @@ import ControlTray from "../components/control-tray/ControlTray";
 import cn from "classnames";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@chakra-ui/react';
-
+import { useToast, Box, Image, Flex } from '@chakra-ui/react';
+import jsonData from '../data/scenarios.json'
+import img1 from '../assets/scenario/scenario1.png'
+import img2 from '../assets/scenario/scenario2.jpg'
+import img3 from '../assets/scenario/scenario3.jpg'
+import img4 from '../assets/scenario/scenario4.jpg'
+import img5 from '../assets/scenario/scenario5.jpg'
+import img6 from '../assets/scenario/scenario6.jpg'
+import { TfiTimer } from "react-icons/tfi";
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const host = "generativelanguage.googleapis.com";
 const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
 
+const imagePaths = [
+    img1, img2, img3, img4, img5, img6,
+];
 const MultimodalLive = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [selectedScenario, setSelectedScenario] = useState(jsonData[0]);
+    const [selectedImage, setSelectedImage] = useState(imagePaths[0]);
     const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
@@ -22,6 +34,17 @@ const MultimodalLive = () => {
     const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
     const navigate = useNavigate();
     const toast = useToast();
+
+    const getRandomScenario = () => {
+        const randomIndex = Math.floor(Math.random() * jsonData.length);
+        const randomImageIndex = Math.floor(Math.random() * imagePaths.length);
+        setSelectedScenario(jsonData[randomIndex]);
+        setSelectedImage(imagePaths[randomImageIndex]);
+    };
+
+    useEffect(() => {
+        getRandomScenario(); // Select a random scenario on load
+    }, []);
 
     const startRecording = async () => {
         try {
@@ -114,7 +137,7 @@ const MultimodalLive = () => {
 
             // Check if the response status is 200 (successful)
             if (response.status === 200) {
-                navigate('/'); 
+                navigate('/');
                 toast({
                     title: "Successfully analyzed",
                     description: "Your video was analyzed successfully.",
@@ -152,12 +175,46 @@ const MultimodalLive = () => {
                         <div className="main-app-area">
                             <Altair />
                             {/* Display video stream */}
-                            <video
-                                ref={videoRef}
-                                className={cn("stream", { hidden: !videoStream })}
-                                autoPlay
-                                playsInline
-                            />
+                            <Flex>
+                                <Box as="section" color="fg.muted" backgroundColor="#18181b" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="33.33vw">
+                                    <Box as="section" color="fg.muted" backgroundColor="#18181b" padding="30px" borderRadius="2xl" textAlign="center" fontSize="2xl">
+                                        <h2>{selectedScenario.title}</h2>
+                                    </Box>
+                                    <Box as="section" padding="12px" textAlign="center">
+                                        <Image
+                                            src={selectedImage}
+                                            alt="Scenario Visual"
+                                            boxSize="300px"
+                                            objectFit="cover"
+                                            borderRadius="lg"
+                                            mx="auto"
+                                        />
+                                    </Box>
+                                    <Box as="section" color="fg.muted" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
+                                        <p><strong>Scenario:</strong> {selectedScenario.scenario}</p>
+                                    </Box>
+                                    <Box as="section" color="fg.muted" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
+                                        <p><strong>AI Role:</strong> {selectedScenario.ai_role}</p>
+                                    </Box>
+                                    <Box as="section" color="fg.muted" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
+                                        <p><strong>Student Role:</strong> {selectedScenario.student_role}</p>
+                                    </Box>
+                                </Box>
+                                <Box as="section" color="fg.muted" backgroundColor="#27272a" borderRadius="2xl" height="98vh" border="1px" width="33.33vw" marginLeft="7px" marginRight="7px">
+                                    <video
+                                        ref={videoRef}
+                                        className={cn("stream", { hidden: !videoStream })}
+                                        autoPlay
+                                        playsInline
+                                    />
+                                </Box>
+                                <Box as="section" color="fg.muted" backgroundColor="#27272a" height="98vh" borderRadius="2xl" border="1px" width="33.33vw">
+                                    <Box  as="section" color="fg.muted" backgroundColor="#27272a" padding="10px" borderRadius="2xl" border="1px" margin="10px">
+                                    <TfiTimer size="4rem"/>
+                                    </Box>
+                                </Box>
+                            </Flex>
+
                         </div>
 
                         {/* Control tray */}
