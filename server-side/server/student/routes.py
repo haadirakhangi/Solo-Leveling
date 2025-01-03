@@ -172,10 +172,13 @@ def interest_assessment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@students.route('/analyze-conversation', methods=['POST'])
+@students.route('/analyze-roleplay-exercise', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def anaylze_conversation():
     try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        student_id = session.get("student_id")
         data : dict = request.form
         if 'video_file' not in request.files:
             return jsonify({"error": "Video file is required"}), 400
@@ -191,8 +194,14 @@ def anaylze_conversation():
         video_file.save(video_file_path)
         scenario = data.get("scenario")
         response = EVALUATOR.evaluate_video_for_soft_skills(video_file_path, scenario)
-        print(response)
-        return jsonify(response), 200
+        result = std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},
+            {"$set": {"soft_skill_assessment.roleplay": response}},
+        )
+        if result.matched_count == 0:
+            print(f"something wrong--> {ObjectId(student_id)}")
+            return jsonify({"error": "User not found"}), 404
+        return jsonify({"response": True, "roleplay_response": response}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -234,43 +243,26 @@ def submit_technical_quiz():
     
 @students.route('/submit-soft-skill-quiz', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def submit_soft_skill_quiz():
+def analyze_soft_skill_quiz():
     try:
-        data : dict = request.json
-        if not data:
-            return jsonify({"error": "Soft skill assessment data is missing"}), 400
-
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
         
         student_id = session.get("student_id")
-        # Update the user's document in the MongoDB collection
+        data : dict = request.json
+        responses = data.get("responses")
+        if not responses:
+            return jsonify({"error": "Soft Quiz assessment data is missing"}), 400
+        soft_skill_analysis = EVALUATOR.evaluate_quiz_for_soft_skills(responses)
         result = std_profile_coll.update_one(
             {"_id": ObjectId(student_id)},  # Match the user by their ID
-            {"$set": {"soft_skill_assessment": data}},  # Update or add quiz_assessment field
+            {"$set": {"soft_skill_assessment.quiz": soft_skill_analysis}},  # Update or add quiz_assessment field
             upsert=False  # Prevent creating a new document if user does not exist
         )
         # Check if the document was updated
         if result.matched_count == 0:
             print(f"something wrong--> {ObjectId(student_id)}")
             return jsonify({"error": "User not found"}), 404
-
-        return jsonify({"message": "Hard Quiz assessment updated successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@students.route('/analyze-soft-skill-quiz', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def analyze_soft_skill_quiz():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        data : dict = request.json
-        responses = data.get("responses")
-        if not responses:
-            return jsonify({"error": "Soft Quiz assessment data is missing"}), 400
-        soft_skill_analysis = EVALUATOR.evaluate_quiz_for_soft_skills(responses)
         return jsonify({"soft_skill_analysis": soft_skill_analysis}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -332,7 +324,7 @@ def user_dashboard():
             return jsonify({"error": "User not logged in"}), 401
 
         student_id = session.get("student_id")
-        user_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        user_data : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
 
         if not user_data:
             return jsonify({"error": "User not found"}), 404
@@ -354,11 +346,11 @@ def user_dashboard():
             "learning_platforms": user_data.get("learning_platforms", ""),
             "top_skills": user_data.get("top_skills", []),
             "resume_id": user_data.get("resume_id", ""),
-            "hard_quiz_assessment": user_data.get("hard_quiz_assessment", {}),
-            
+            "technical_assessment": user_data.get("technical_assessment", {}),
+            "soft_skill_assessment": user_data.get("soft_skill_assessment", {}),
         }
 
-        return jsonify({"dashboard": dashboard_data}), 200
+        return jsonify(dashboard_data), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

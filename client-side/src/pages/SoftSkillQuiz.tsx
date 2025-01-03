@@ -3,9 +3,12 @@ import axios from 'axios';
 import { Box, Button, Flex, Text, RadioGroup, Radio, VStack, Progress } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 import { questions } from './softskillQuestions';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const SoftSkillQuiz: React.FC = () => {
   const toast = useToast();
+  const navigate = useNavigate();
 
   // State variables
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -62,14 +65,18 @@ const SoftSkillQuiz: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('/api/student/analyze-soft-skill-quiz', { responses });
-      toast({
-        title: 'Quiz submitted successfully!',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
+      await axios.post('/api/student/submit-soft-skill-quiz', { responses });
+      Swal.fire({
+        title: 'Congratulations!',
+        text: 'Your soft skill assessment has been submitted successfully.',
+        icon: 'success',
+        confirmButtonText: 'Go to Dashboard',
+    }).then((result) =>{
+      if (result.isConfirmed){
+        navigate('/');
+      }
+    });
+   } catch (error) {
       toast({
         title: 'Failed to submit quiz.',
         description: 'Please try again later.',

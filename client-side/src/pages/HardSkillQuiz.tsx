@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Box, Button, Flex, Text, RadioGroup, Radio, VStack, Progress } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 interface Question {
   skill_area: string;
@@ -150,7 +151,7 @@ const QuizPage: React.FC = () => {
       }, {} as Record<string, { score: number; maxScore: number }>);
 
       await axios.post(
-        '/api/student/submit-quiz-scores',
+        '/api/student/submit-technical-quiz',
         {
           knowledgeScores,
           interestScores,
@@ -158,14 +159,16 @@ const QuizPage: React.FC = () => {
         { withCredentials: true }
       );
 
-      toast({
-        title: 'Quiz submitted successfully!',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
+      Swal.fire({
+        title: 'Congratulations!',
+        text: 'Your technical assessment has been submitted successfully.',
+        icon: 'success',
+        confirmButtonText: 'Go to Dashboard',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/');
+        }
       });
-
-      navigate('/');
     } catch (error) {
       toast({
         title: 'Failed to submit quiz.',
