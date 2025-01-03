@@ -203,13 +203,13 @@ def logout():
     session.clear()
     return jsonify({"message": "User logged out successfully", "response":True}), 200
 
-@students.route('/submit-quiz-scores', methods=['POST'])
+@students.route('/submit-technical-quiz', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def submit_quiz_score():
+def submit_technical_quiz():
     try:
         data = request.json
         if not data:
-            return jsonify({"error": "Hard Quiz assessment data is missing"}), 400
+            return jsonify({"error": "Technical assessment data is missing"}), 400
 
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
@@ -218,10 +218,38 @@ def submit_quiz_score():
         # Update the user's document in the MongoDB collection
         result = std_profile_coll.update_one(
             {"_id": ObjectId(student_id)},  # Match the user by their ID
-            {"$set": {"hard_quiz_assessment": data}},  # Update or add quiz_assessment field
+            {"$set": {"technical_assessment": data}},  # Update or add quiz_assessment field
             upsert=False  # Prevent creating a new document if user does not exist
         )
 
+        # Check if the document was updated
+        if result.matched_count == 0:
+            print(f"something wrong--> {ObjectId(student_id)}")
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({"message": "Technical assessment updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('/submit-soft-skill-quiz', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def submit_soft_skill_quiz():
+    try:
+        data : dict = request.json
+        if not data:
+            return jsonify({"error": "Soft skill assessment data is missing"}), 400
+
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+        student_id = session.get("student_id")
+        # Update the user's document in the MongoDB collection
+        result = std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},  # Match the user by their ID
+            {"$set": {"soft_skill_assessment": data}},  # Update or add quiz_assessment field
+            upsert=False  # Prevent creating a new document if user does not exist
+        )
         # Check if the document was updated
         if result.matched_count == 0:
             print(f"something wrong--> {ObjectId(student_id)}")
@@ -268,7 +296,7 @@ def fetch_job_roles():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.rout('/skill-gap-analysis', methods=['POST'])
+@students.route('/skill-gap-analysis', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def fetch_in_demand_skills():
     try:
