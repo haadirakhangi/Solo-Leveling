@@ -323,4 +323,44 @@ def fetch_online_courses():
         return jsonify({"courses": courses}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@students.route('/user-dashboard', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def user_dashboard():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+
+        student_id = session.get("student_id")
+        user_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+
+        # Prepare the dashboard data
+        dashboard_data = {
+            "full_name": user_data.get("full_name", ""),
+            "age": user_data.get("age", ""),
+            "location": user_data.get("location", ""),
+            "preferred_language": user_data.get("preferred_language", ""),
+            "email": user_data.get("email", ""),
+            "gender": user_data.get("gender", ""),
+            "highest_education": user_data.get("highest_education", ""),
+            "field_of_study": user_data.get("field_of_study", ""),
+            "dream_job": user_data.get("dream_job", ""),
+            "interests": user_data.get("interests", []),
+            "challenges": user_data.get("challenges", ""),
+            "motivation": user_data.get("motivation", ""),
+            "learning_platforms": user_data.get("learning_platforms", ""),
+            "top_skills": user_data.get("top_skills", []),
+            "resume_id": user_data.get("resume_id", ""),
+            "hard_quiz_assessment": user_data.get("hard_quiz_assessment", {}),
+            
+        }
+
+        return jsonify({"dashboard": dashboard_data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
     
