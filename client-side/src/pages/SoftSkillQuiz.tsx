@@ -62,7 +62,7 @@ const SoftSkillQuiz: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('/api/student/softskill-quiz', { responses });
+      await axios.post('/api/student/analyze-soft-skill-quiz', { responses });
       toast({
         title: 'Quiz submitted successfully!',
         status: 'success',

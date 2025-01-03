@@ -172,7 +172,6 @@ def interest_assessment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @students.route('/analyze-conversation', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def anaylze_conversation():
@@ -211,12 +210,11 @@ def submit_quiz_score():
         data = request.json
         if not data:
             return jsonify({"error": "Hard Quiz assessment data is missing"}), 400
+
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
         
-        student_id = session.get("student_id","something")
-
-        if not student_id:
-            return jsonify({"error": "User not logged in or session expired"}), 401
-
+        student_id = session.get("student_id")
         # Update the user's document in the MongoDB collection
         result = std_profile_coll.update_one(
             {"_id": ObjectId(student_id)},  # Match the user by their ID
@@ -231,5 +229,20 @@ def submit_quiz_score():
 
         return jsonify({"message": "Hard Quiz assessment updated successfully"}), 200
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('/analyze-soft-skill-quiz', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def analyze_soft_skill_quiz():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        responses = data.get("responses")
+        if not responses:
+            return jsonify({"error": "Soft Quiz assessment data is missing"}), 400
+        soft_skill_analysis = EVALUATOR.evaluate_quiz_for_soft_skills(responses)
+        return jsonify({"soft_skill_analysis": soft_skill_analysis}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

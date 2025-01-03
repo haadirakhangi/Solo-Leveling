@@ -70,7 +70,12 @@ class GeminiProvider:
             file = self.gemini_client.files.get(name=file.name)
         if file.state == "FAILED":
             raise ValueError(file.state)
+        print(f"\nFile processing complete: {file.state}")
         return file
+    
+    def delete_file(self, file):
+        print("Deleting file...")
+        return self.gemini_client.files.delete(name=file.name)
     
     def explain_two_image(self, prompt, image1_path, image2_path):
         with open(image1_path, 'rb') as f:

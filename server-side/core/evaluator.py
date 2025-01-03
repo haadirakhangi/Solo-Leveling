@@ -11,4 +11,19 @@ class Evaluator:
 
         video_file = self.gemini_client.upload_file(video_path, mime_type="video/webm")
         response = self.gemini_client.generate_json_response(prompt, file=video_file)
+        self.gemini_client.delete_file(video_file)
+        return response
+    
+    def evaluate_quiz_for_soft_skills(self, quiz_responses : list[dict]):
+        prompt="""`You are a highly skilled soft skills analyst. You will receive a dataset containing multiple responses from a user to scenario-based questions designed to assess their soft skills. Each response includes the soft skill area being tested, the question presented, the available options, and the option selected by the user.  Your task is to analyze these responses, providing a comprehensive report detailing the user's demonstrated proficiency in each soft skill area.\n\n"""
+
+        for i, response in enumerate(quiz_responses):
+            prompt += f"**Question {i+1}:** {response['question']}\n"
+            prompt += f"**Skill Area:** {response['soft_skill']}\n"
+            prompt += f"**Options:** {response['options']}\n"
+            prompt += f"**User's Response:** {response['answer']}\n\n"
+        prompt += """
+        **Output Instructions:**\nYour output should be a JSON object containing a detailed analysis of the user's soft skills based on their responses. The response should include the following keys:\n"summary": An overall summary of the user's soft skills profile.\n\n"observations" : A dictionary with keys being the soft skill name and values being specific observations and comments on the user's choice of responses and their implications.\n"recommendations": A dictionary with keys being teh soft skill name and values being recommendations for improvement where applicable.
+        """
+        response = self.gemini_client.generate_json_response(prompt)
         return response
