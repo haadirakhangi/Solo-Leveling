@@ -6,7 +6,6 @@
 # from sqlalchemy import desc
 # from deep_translator import GoogleTranslator
 # from flask import request, session, jsonify, send_file, Blueprint
-# from concurrent.futures import ThreadPoolExecutor
 # from flask_cors import cross_origin
 # from werkzeug.utils import secure_filename
 # from langchain_community.vectorstores import FAISS
@@ -17,6 +16,7 @@
 # from urllib.parse import quote_plus
 # import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from bson.objectid import ObjectId
 from gridfs import GridFS
 from werkzeug.utils import secure_filename
@@ -244,5 +244,53 @@ def analyze_soft_skill_quiz():
             return jsonify({"error": "Soft Quiz assessment data is missing"}), 400
         soft_skill_analysis = EVALUATOR.evaluate_quiz_for_soft_skills(responses)
         return jsonify({"soft_skill_analysis": soft_skill_analysis}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.rout('/fetch-in-demand-skills', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_in_demand_skills():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        job_role = data.get("job_role")
+        response = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('fetch-online-courses', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_online_courses():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        student_id = session.get("student_id")
+        data : dict = request.json
+        skills = data.get("skills")
+        courses = SERPER_CLIENT.find_courses(skills)
+        return jsonify({"courses": courses}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('fetch-job-roles', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def fetch_job_roles():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        student_id = session.get("student_id")
+        students : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        top_skills = students.get("top_skills")
+        interests = students.get("interests")
+        with ThreadPoolExecutor() as executor:
+            future_job_one = executor.submit(SKILLS_ANALYZER.find_job_roles_from_student_skills, top_skills)
+            future_job_two = executor.submit(SKILLS_ANALYZER.find_job_roles_from_interests, interests)
+        
+        job_roles_one = future_job_one.result()
+        job_roles_two = future_job_two.result()
+        all_jobs = job_roles_one + job_roles_two
+        return jsonify({"job_roles":list(set(all_jobs))}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
