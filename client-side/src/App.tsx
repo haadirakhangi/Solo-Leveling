@@ -6,9 +6,10 @@ import MultimodalLive from "./pages/MultimodalLive";
 import StudentRegister from "./pages/register/StudentRegister";
 import TeacherRegister from "./pages/register/TeacherRegister";
 import HardSkillQuiz from "./pages/HardSkillQuiz";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import Interview from "./pages/Interview";
 // import "./pages/student/content/i18n"
+import AssessmentPage from "./pages/AssessmentPage";
 function App() {
   return (
     <Routes>
@@ -18,10 +19,10 @@ function App() {
       <Route element={<TeacherRegister />} path="/register/teacher" />
       <Route element={<HomePage />} path="/" />
       <Route element={<SoftSkillQuiz />} path="/student/soft-skill-quiz" />
-      <Route element={<HardSkillQuiz />} path="/student/hard-skill-quiz" />
+      <Route element={<HardSkillQuiz />} path="/student/technical-quiz" />
       <Route element={<Interview />} path="/student/interview" />
       <Route element={<MultimodalLive />} path="/student/scenario" />
-
+      <Route element={<AssessmentPage />} path="/student/assessment" />
       <Route element={<Dashboard />} path="/student/dashboard" />
 
       

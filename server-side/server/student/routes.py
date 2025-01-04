@@ -354,5 +354,31 @@ def user_dashboard():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@students.route("/assessment-status", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_assessment_status():
+    # Find the user data by user_id in MongoDB
+    if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+    student_id = session.get("student_id")
+    user_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+    
+    if user_data is None:
+        return jsonify({"message": "User not found"}), 404
+
+    assessment_status = {
+        "technical_assessment": {
+            "status": "Completed" if user_data.get("technical_assessment") else "Not Completed"
+        },
+         "soft_skill_assessment": {
+            "status": "Completed" if user_data.get("soft_skill_assessment", {}).get("quiz") else "Not Completed"
+        },
+        "scenario_based_assessment": {
+            "status": "Completed" if user_data.get("soft_skill_assessment", {}).get("roleplay") else "Not Completed"
+        },
+    }
+    return jsonify(assessment_status)
 
     

@@ -163,10 +163,10 @@ const QuizPage: React.FC = () => {
         title: 'Congratulations!',
         text: 'Your technical assessment has been submitted successfully.',
         icon: 'success',
-        confirmButtonText: 'Go to Dashboard',
+        confirmButtonText: 'Next',
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/');
+          navigate('/student/assessment');
         }
       });
     } catch (error) {
