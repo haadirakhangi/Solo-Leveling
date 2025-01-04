@@ -38,6 +38,7 @@ interface UserData {
         knowledgeScores: { [key: string]: { score: number; maxScore: number } };
         interestScores: { [key: string]: { score: number; maxScore: number } };
     }
+    required_skills:  { [key: string]: number };
 }
 
 const purpleTheme = extendTheme({
@@ -69,7 +70,7 @@ const Dashboard = () => {
         const fetchUserData = async () => {
             try {
                 const response = await axios.get('/api/student/user-dashboard', { withCredentials: true });
-                setUserData(response.data);
+                setUserData(response.data.user_data);
                 setLoading(false);
             } catch (error) {
                 toast({
@@ -112,7 +113,7 @@ const Dashboard = () => {
                     <TabPanels>
                         <TabPanel>
                             {userData && (
-                                <UserProfile name={userData.full_name} age={userData.age} gender={userData.gender} email={userData.email} strengthsAndWeaknesses={strengthsAndWeaknesses} />
+                                <UserProfile jobMarketData={userData.required_skills} name={userData.full_name} age={userData.age} gender={userData.gender} email={userData.email} strengthsAndWeaknesses={strengthsAndWeaknesses} />
                             )}
                         </TabPanel>
                         <TabPanel>
