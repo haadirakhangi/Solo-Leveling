@@ -152,7 +152,12 @@ const MultimodalLive = () => {
             console.error("Error starting recording:", error);
         }
     };
-
+    useEffect(() => {
+        if (videoRef.current && videoStream) {
+            videoRef.current.srcObject = videoStream;
+        }
+    }, [videoStream]);
+    
     const stopRecording = () => {
         if (mediaRecorder && mediaRecorder.state === "recording") {
             mediaRecorder.stop();
@@ -174,7 +179,7 @@ const MultimodalLive = () => {
         formData.append("video_file", videoBlob, "recording.webm");
 
         try {
-            const response = await axios.post("/api/student/analyze-roleplay-exercise", formData, {
+            const response = await axios.post("/api/student/analyze-conversation", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
@@ -217,52 +222,52 @@ const MultimodalLive = () => {
                     <main>
                         <div className="main-app-area" style={{ "fontFamily": "Jost" }}>
                             <Altair />
+                            {/* Display video stream */}
                             <Flex>
-                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
-                                    <Box as="section" color="white" backgroundColor="purple.700" margin="20px" borderRadius="2xl" textAlign="center" fontSize="2xl">
+                                <Box as="section" color="white" backgroundColor="#18181b" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
+                                    <Box as="section" color="white" backgroundColor="#18181b" padding="30px" borderRadius="2xl" textAlign="center" fontSize="2xl">
                                         <h2 >{selectedScenario.title}</h2>
                                     </Box>
-                                    <Box as="section" marginBottom="15px" textAlign="center">
+                                    <Box as="section" padding="12px" textAlign="center">
                                         <Image
                                             src={selectedImage}
                                             alt="Scenario Visual"
-                                            boxSize="250px"
+                                            boxSize="300px"
                                             objectFit="cover"
                                             borderRadius="lg"
                                             mx="auto"
                                         />
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
                                         <p color="white"><strong>Scenario:</strong> {selectedScenario.scenario}</p>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
                                         <p color="white"><strong>AI Role:</strong> {selectedScenario.ai_role}</p>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="12px" borderRadius="2xl" border="1px" margin="10px">
                                         <p color="white"><strong>Student Role:</strong> {selectedScenario.student_role}</p>
                                     </Box>
                                 </Box>
-                                <Box as="section" color="white" backgroundColor="purple.700" borderRadius="2xl" height="98vh" border="1px" width="32.33vw" marginLeft="7px" marginRight="7px">
+                                <Box as="section" color="white" backgroundColor="#27272a" borderRadius="2xl" height="98vh" border="1px" width="32.33vw" marginLeft="7px" marginRight="7px">
                                     <Box margin="15px" marginLeft="50px" display="flex" alignItems="center" justifyContent="center" height="100%">
                                         {videoStream ? (
                                             <video
-                                                ref={videoRef}
-                                                className={cn("stream", { hidden: !videoStream })}
-                                                autoPlay
-                                                playsInline
-                                            />
+                                            ref={videoRef}
+                                            className={cn("stream", { hidden: !videoStream })}
+                                            autoPlay
+                                            playsInline
+                                            style={{ width: "100%", height: "100%", backgroundColor: "black" }}
+                                        />
                                         ) : (
-                                            <Box as="section" color="white" backgroundColor="purple.900" borderRadius="2xl" border="1px" margin="10px" position={"relative"} left={"-15px"}>
-                                                <Box as="section" margin="100px 200px 100px 200px" textAlign="center" >
-                                                <TfiCamera size="50px" color="#1A202C"/>
-                                                </Box>
+                                            <Box border="1px" borderRadius="full" padding="20px" backgroundColor="#27272a" shadow="2xl">  
+                                            <TfiCamera size="50px" color="gray"/>
                                             </Box>
                                         )}
                                     </Box>
                                 </Box>
 
-                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
-                                    <Box as="section" color="white" backgroundColor="purple.900" padding="10px" borderRadius="2xl" border="1px" margin="10px">
+                                <Box as="section" color="white" backgroundColor="#27272a" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="10px" borderRadius="2xl" border="1px" margin="10px">
                                         <Box as="section" padding="12px" textAlign="center">
                                             <Image
                                                 src={human}
@@ -275,9 +280,9 @@ const MultimodalLive = () => {
                                             <Text padding="30px" style={{ "fontFamily": "Jost" }}>Athena</Text>
                                         </Box>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="10px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="10px" borderRadius="2xl" border="1px" margin="10px">
                                         <Text>Guidelines : </Text>
-                                        <Text color="black">
+                                        <Text color="white">
                                             1. AI analyzes tone, clarity, and confidence, so articulate your answers at a steady pace.<br />
                                             2.  Maintain eye contact with the camera and respond as if speaking to a human interviewer.<br />
                                             3. Express enthusiasm and confidence in your voice to make a positive impression.<br />
@@ -286,14 +291,14 @@ const MultimodalLive = () => {
                                         </Text>
                                     </Box>
 
-                                    <Box as="section" color="black" backgroundColor="purple.300" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="white" backgroundColor="#27272a" padding="10px" borderRadius="2xl" border="1px" margin="10px">
                                         <Flex>
-                                            <Box margin="10px">
-                                                <TfiTimer size="50px"
+                                            <Box margin="20px">
+                                                <TfiTimer size="80px"
                                                 /></Box>
                                             {/* <button onClick={startTimer} disabled={timerRunning}>Start Timer</button>
                                     <button onClick={stopTimer} disabled={!timerRunning}>Stop Timer</button> */}
-                                            <Box marginTop="13px">
+                                            <Box marginTop="30px">
                                                 <Text fontSize="3xl">Elapsed Time: {formatTime(elapsedTime)}</Text>
                                             </Box>
                                         </Flex>

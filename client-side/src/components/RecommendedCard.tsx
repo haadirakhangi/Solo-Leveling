@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box, Stack, Heading, Image, Card, CardBody, CardFooter, Button, Divider, ButtonGroup, Flex, Center, Grid
 } from '@chakra-ui/react';
-import { SlideFade } from '@chakra-ui/transition';
 import { useColorModeValue } from '@chakra-ui/react';
 import courseraLogo from '../assets/cards/coursera.png'; // Import Coursera icon
 import upgradLogo from '../assets/cards/upgrad.jpg'; // Import upGrad icon

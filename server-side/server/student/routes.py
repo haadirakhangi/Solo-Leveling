@@ -41,6 +41,8 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 student_data = client["student_data"]
 std_profile_coll = student_data["profile"]
+job_roles = student_data["job_roles"]
+
 fs = GridFS(student_data)
 
 @students.route('/register', methods=['POST'])
@@ -274,9 +276,17 @@ def fetch_job_roles():
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
         student_id = session.get("student_id")
-        students : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
-        top_skills = students.get("top_skills")
-        interests = students.get("interests")
+        student = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        if "jobroles" in student:
+            return jsonify({"job_roles": student["jobroles"]}), 200
+
+        top_skills = student.get("top_skills", [])
+        interests = student.get("interests", [])
+
         with ThreadPoolExecutor() as executor:
             future_job_one = executor.submit(SKILLS_ANALYZER.find_job_roles_from_student_skills, top_skills)
             future_job_two = executor.submit(SKILLS_ANALYZER.find_job_roles_from_interests, interests)
@@ -284,9 +294,14 @@ def fetch_job_roles():
         job_roles_one = future_job_one.result()
         job_roles_two = future_job_two.result()
         all_jobs = {**job_roles_one, **job_roles_two}
-        return jsonify({"job_roles":all_jobs}), 200
+        std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},
+            {"$set": {"jobroles": all_jobs}}
+        )
+        return jsonify({"job_roles": all_jobs}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     
 @students.route('/skill-gap-analysis', methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -294,12 +309,39 @@ def fetch_in_demand_skills():
     try:
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
-        data : dict = request.json
+
+        student_id = session["student_id"]
+        data: dict = request.json
         job_role = data.get("job_role")
-        required_skills = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
         students_current_skills = data.get("current_skills")
+        if not students_current_skills:
+            student_data = std_profile_coll.find_one({"student_id": student_id})
+            if not student_data:
+                return jsonify({"error": "Student not found"}), 404
+
+            students_current_skills = student_data.get("top_skills", [])
+
+        existing_job_role_data = job_roles.find_one({"student_id": student_id, "job_role": job_role})
+        if existing_job_role_data:
+            return jsonify({
+                "required_skills": existing_job_role_data["required_skills"],
+                "skill_gap_analysis": existing_job_role_data["skill_gap_analysis"]
+            }), 200
+        required_skills = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
         skill_gap_analysis = SKILLS_ANALYZER.analyze_skill_gap(job_role, students_current_skills, required_skills)
-        return jsonify({"required_skills":required_skills, "skill_gap_analysis": skill_gap_analysis}), 200
+        job_role_data = {
+            "student_id": student_id,
+            "job_role": job_role,
+            "required_skills": required_skills,
+            "skill_gap_analysis": skill_gap_analysis
+        }
+        job_roles.insert_one(job_role_data)
+
+        return jsonify({
+            "required_skills": required_skills,
+            "skill_gap_analysis": skill_gap_analysis
+        }), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -354,5 +396,30 @@ def user_dashboard():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@students.route("/assessment-status", methods=["GET"])
+@cross_origin(supports_credentials=True)
+def get_assessment_status():
+    if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        
+    student_id = session.get("student_id")
+    user_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+    
+    if user_data is None:
+        return jsonify({"message": "User not found"}), 404
+
+    assessment_status = {
+        "technical_assessment": {
+            "status": "Completed" if user_data.get("technical_assessment") else "Not Completed"
+        },
+         "soft_skill_assessment": {
+            "status": "Completed" if user_data.get("soft_skill_assessment", {}).get("quiz") else "Not Completed"
+        },
+        "scenario_based_assessment": {
+            "status": "Completed" if user_data.get("soft_skill_assessment", {}).get("roleplay") else "Not Completed"
+        },
+    }
+    return jsonify(assessment_status)
 
     

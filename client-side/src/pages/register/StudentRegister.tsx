@@ -41,7 +41,12 @@ const form1Schema = yup.object().shape({
     .min(8, 'Password is too short - should be 8 chars minimum.')
     .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.')
     .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm password is required'),
 });
+
 
 const form2Schema = yup.object().shape({
   gender: yup.string().required('Gender is required'),
@@ -85,6 +90,7 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
         <b>Basic Information</b>
       </Text>
 
+      {/* Existing Fields */}
       <FormControl isInvalid={!!errors.fullName} mb={4}>
         <FormLabel htmlFor="full-name">Full Name</FormLabel>
         <Input
@@ -196,9 +202,25 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
           {errors.password && errors.password.message}
         </FormErrorMessage>
       </FormControl>
+
+      {/* Confirm Password Field */}
+      <FormControl isInvalid={!!errors.confirmPassword} mb={4}>
+        <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+        <Input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="Re-enter your password"
+          {...register('confirmPassword')}
+        />
+        <FormErrorMessage>
+          {errors.confirmPassword && errors.confirmPassword.message}
+        </FormErrorMessage>
+      </FormControl>
     </>
   );
 };
+
 
 const Form2 = ({ register, errors }: { register: any; errors: any }) => {
   return (
@@ -293,15 +315,15 @@ const Form3 = ({ register, errors }: { register: any; errors: any }) => {
         fontWeight="normal"
         mb="2%"
       >
-        <b>Dream Job & Interests</b>
+        <b>Dream Company & Interests</b>
       </Text>
 
       <FormControl isInvalid={!!errors.dreamJob} mb={4}>
-        <FormLabel htmlFor="dreamJob">What is your Dream Job / Job Role?</FormLabel>
+        <FormLabel htmlFor="dreamJob">What is your Dream Company</FormLabel>
         <Input
           id="dreamJob"
           name="dreamJob"
-          placeholder="Example: IT professional at Google"
+          placeholder="Example: Google,Microsoft"
           {...register('dreamJob')}
         />
         <FormErrorMessage>{errors.dreamJob && errors.dreamJob.message}</FormErrorMessage>

@@ -15,6 +15,7 @@ interface Question {
 const QuizPage: React.FC = () => {
   const toast = useToast();
   const navigate = useNavigate();
+
   // State variables
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState('');
@@ -27,6 +28,7 @@ const QuizPage: React.FC = () => {
   const [interestScore, setInterestScore] = useState(0);
   const [quizType, setQuizType] = useState<'knowledge' | 'interest'>('knowledge');
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch questions from the backend
   useEffect(() => {
@@ -127,6 +129,7 @@ const QuizPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true); // Set loading state to true during submission
     try {
       // Calculate scores grouped by skill area for knowledge quiz
       const knowledgeScores = knowledgeQuestions.reduce((acc, question, index) => {
@@ -163,10 +166,10 @@ const QuizPage: React.FC = () => {
         title: 'Congratulations!',
         text: 'Your technical assessment has been submitted successfully.',
         icon: 'success',
-        confirmButtonText: 'Go to Dashboard',
+        confirmButtonText: 'Next',
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/');
+          navigate('/student/assessment');
         }
       });
     } catch (error) {
@@ -177,14 +180,16 @@ const QuizPage: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsSubmitting(false); // Reset loading state after submission
     }
   };
 
-  if (loading) {
+  if (loading || isSubmitting) {
     return (
       <Flex direction="column" align="center" justify="center" h="100vh" bg="gray.100">
-        <Text fontSize="xl" color="purple.700">
-          Generating questions...
+        <Text fontSize="xl" color="purple.700">s
+          {isSubmitting ? 'Submitting your quiz...' : 'Generating questions...'}
         </Text>
         <Progress size="sm" isIndeterminate colorScheme="purple" w="100%" />
       </Flex>

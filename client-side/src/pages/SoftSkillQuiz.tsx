@@ -15,6 +15,7 @@ const SoftSkillQuiz: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [responses, setResponses] = useState<{ question: string; soft_skill: string; answer: string }[]>([]);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [isSubmitting, setIsSubmitting] = useState(false); // State for loading
 
   // Timer effect
   useEffect(() => {
@@ -64,19 +65,20 @@ const SoftSkillQuiz: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true); // Set loading to true when submission starts
     try {
       await axios.post('/api/student/submit-soft-skill-quiz', { responses });
       Swal.fire({
         title: 'Congratulations!',
         text: 'Your soft skill assessment has been submitted successfully.',
         icon: 'success',
-        confirmButtonText: 'Go to Dashboard',
-    }).then((result) =>{
-      if (result.isConfirmed){
-        navigate('/');
-      }
-    });
-   } catch (error) {
+        confirmButtonText: 'Next',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/student/assessment');
+        }
+      });
+    } catch (error) {
       toast({
         title: 'Failed to submit quiz.',
         description: 'Please try again later.',
@@ -84,6 +86,8 @@ const SoftSkillQuiz: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsSubmitting(false); // Reset loading state after submission
     }
   };
 
@@ -91,36 +95,50 @@ const SoftSkillQuiz: React.FC = () => {
 
   return (
     <Flex direction="column" align="center" justify="center" position="relative" h="100vh" bg="gray.100">
-      <Text fontSize="xl" fontWeight="bold" color="purple.700" position="absolute" top="20px">
-        Time Left: {timeLeft}s
-      </Text>
-      <Box w="85%" mx="auto" mt="50px" p="6" boxShadow="lg" bg="white" borderRadius="md">
-        <Progress value={(timeLeft / 60) * 100} colorScheme="purple" size="sm" borderRadius="md" mb="4" />
+      {/* Show loading UI if isSubmitting is true */}
+      {isSubmitting ? (
+        <Flex direction="column" align="center" justify="center" minHeight="100vh" bg="purple.50">
+          <Progress hasStripe isIndeterminate size="lg" colorScheme="purple" width="80%" mb={6} />
+          <Text fontSize="lg" color="purple.700">
+            Submitting...
+          </Text>
+        </Flex>
+      ) : (
+        <Box w="85%" mx="auto" mt="50px" p="6" boxShadow="lg" bg="white" borderRadius="md">
+          <Progress value={(timeLeft / 60) * 100} colorScheme="purple" size="sm" borderRadius="md" mb="4" />
 
-        <Text fontSize="2xl" fontWeight="bold" mb="4" color="purple.700">
-          Soft Skill Quiz
-        </Text>
+          <Text fontSize="2xl" fontWeight="bold" mb="4" color="purple.700">
+            Soft Skill Quiz
+          </Text>
 
-        <Text fontSize="lg" mb="2" color="purple.600">
-          <strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}
-        </Text>
+          <Text fontSize="lg" mb="2" color="purple.600">
+            <strong>{currentQuestionIndex + 1}.</strong> {currentQuestion.question}
+          </Text>
 
-        <RadioGroup onChange={handleOptionChange} value={selectedOption}>
-        <VStack spacing={4} align="start">
-            {currentQuestion.options.map((option, index) => (
-              <Radio key={index} value={option} colorScheme="purple">
-                {`${index + 1}. ${option}`}
-              </Radio>
-            ))}
-          </VStack>
-        </RadioGroup>
+          <RadioGroup onChange={handleOptionChange} value={selectedOption}>
+            <VStack spacing={4} align="start">
+              {currentQuestion.options.map((option, index) => (
+                <Radio key={index} value={option} colorScheme="purple">
+                  {`${index + 1}. ${option}`}
+                </Radio>
+              ))}
+            </VStack>
+          </RadioGroup>
 
-        <Box mt="6" textAlign="right">
-          <Button colorScheme="purple" onClick={() => handleNext()}>
-            {currentQuestionIndex === questions.length - 1 ? 'Submit' : 'Next'}
-          </Button>
+          <Box mt="6" textAlign="center">
+            <Button
+              colorScheme="purple"
+              onClick={() => handleNext()}
+              isLoading={isSubmitting} // Show loading spinner if submitting
+              loadingText="Submitting..."
+              spinnerPlacement="start"
+              isDisabled={isSubmitting} // Disable button during submission
+            >
+              {currentQuestionIndex === questions.length - 1 ? 'Submit' : 'Next'}
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Flex>
   );
 };

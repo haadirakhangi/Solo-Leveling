@@ -38,7 +38,7 @@ const Login = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleCreateAccountClick = () => {
-    navigate('/register');
+    navigate('/register/student');
   };
 
   const teacherForm = useForm({ resolver: yupResolver(schema) });
@@ -61,7 +61,7 @@ const Login = () => {
 
         if (activeTab==0){
           sessionStorage.setItem('student_authenticated', 'true');
-          navigate('/student/dashboard');
+          navigate('/student/assessment');
           
         }else{
           sessionStorage.setItem('teacher_authenticated', 'true');          
