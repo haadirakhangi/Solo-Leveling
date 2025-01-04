@@ -115,7 +115,7 @@ const SoftSkillQuiz: React.FC = () => {
           </VStack>
         </RadioGroup>
 
-        <Box mt="6" textAlign="right">
+        <Box mt="6" textAlign="center">
           <Button colorScheme="purple" onClick={() => handleNext()}>
             {currentQuestionIndex === questions.length - 1 ? 'Submit' : 'Next'}
           </Button>

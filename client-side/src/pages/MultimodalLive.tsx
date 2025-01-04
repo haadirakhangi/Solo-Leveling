@@ -122,7 +122,6 @@ const MultimodalLive = () => {
 
             // Now, the mixed audio is available in the destination.stream
             const combinedStream = new MediaStream([
-                ...screenStream.getVideoTracks(), // Screen video
                 ...userMediaStream.getVideoTracks(), // User video
                 ...destination.stream.getAudioTracks(), // Mixed audio (screen + microphone)
             ]);
@@ -142,7 +141,7 @@ const MultimodalLive = () => {
                 const blob = new Blob(chunks, { type: "video/webm" });
                 setRecordedBlob(blob);
                 await sendVideoToBackend(blob);
-                downloadVideo(blob);
+                // downloadVideo(blob);
             };
 
             recorder.start();
@@ -180,7 +179,7 @@ const MultimodalLive = () => {
 
             // Check if the response status is 200 (successful)
             if (response.status === 200) {
-                navigate('/');
+                navigate('/student/dashboard');
                 toast({
                     title: "Successfully analyzed",
                     description: "Your video was analyzed successfully.",
