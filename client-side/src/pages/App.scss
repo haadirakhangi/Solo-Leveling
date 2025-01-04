@@ -18,7 +18,7 @@
   --midnight-blue: rgb(0, 18, 51);
   --blue-30: #99beff;
 
-  --accent-red: #ff4600;
+  --accent-red: #9F7AEA;
 
   --background: var(--gray-900);
   --color: var(--text);
@@ -29,16 +29,16 @@
   --font-family: "Space Mono", monospace;
 
   /* */
-  --Neutral-00: #000;
-  --Neutral-5: #181a1b;
-  --Neutral-10: #1c1f21;
-  --Neutral-15: #232729;
-  --Neutral-20: #2a2f31;
-  --Neutral-30: #404547;
-  --Neutral-50: #707577;
-  --Neutral-60: #888d8f;
+  --Neutral-00: #322659;
+  --Neutral-5: #44337A;
+  --Neutral-10: #553C9A;
+  --Neutral-15: #6B46C1;
+  --Neutral-20: #805AD5;
+  --Neutral-30: #9F7AEA;
+  --Neutral-50: #B794F4;
+  --Neutral-60: #D6BCFA;
   --Neutral-80: #c3c6c7;
-  --Neutral-90: #e1e2e3;
+  --Neutral-90: #FAF5FF;
 
   --Green-500: #0d9c53;
   --Green-700: #025022;
@@ -46,10 +46,10 @@
   --Blue-500: #1f94ff;
   --Blue-800: #0f3557;
 
-  --Red-400: #ff9c7a;
-  --Red-500: #ff4600;
-  --Red-600: #e03c00;
-  --Red-700: #bd3000;
+  --Red-400: #B794F4;
+  --Red-500: #805AD5;
+  --Red-600: #553C9A;
+  --Red-700: #44337A;
 }
 
 body {
@@ -114,7 +114,7 @@ body {
 @media (prefers-reduced-motion: no-preference) {}
 
 .streaming-console {
-  background: var(--Neutral-5);
+  background: #D6BCFA;
   color: var(--gray-300);
   display: flex;
   height: 100vh;

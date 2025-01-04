@@ -74,7 +74,9 @@ function ControlTray({ isRecording, startRecording, stopRecording }: ControlTray
           <button
             className={cn("action-button connect-toggle", { connected })}
             onClick={handleStreamingToggle}
+            style={{width: "8vw", textTransform: "capitalize", fontSize: "1.20rem", lineHeight: "0"}}
           >
+            {connected ? "Stop Test" : "Start Test"}
             <span className="material-symbols-outlined filled">
               {connected ? "pause" : "play_arrow"}
             </span>

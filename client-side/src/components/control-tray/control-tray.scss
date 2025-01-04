@@ -33,15 +33,15 @@
 
   &:hover {
     background: rgba(0, 0, 0, 0);
-    border: 1px solid var(--Neutral-20);
+    border: 1px solid var(--Neutral-5);
   }
 
   &.connected {
-    background: var(--Blue-800);
-    color: var(--Blue-500);
+    background: var(--Neutral-5);
+    color: var(--Neutral-30);
 
     &:hover {
-      border: 1px solid var(--Blue-500);
+      border: 1px solid var(--Neutal-5);
     }
   }
 }
@@ -98,8 +98,8 @@
   }
 
   &:not(.connected) {
-    background-color: var(--Blue-500);
-    color: var(--Neutral-5);
+    background-color: var(--Neutral-30);
+    color: var(--Neutral-00);
   }
 }
 
@@ -117,7 +117,7 @@
   .disabled .action-button,
   .action-button.disabled {
     background: rgba(0, 0, 0, 0);
-    border: 1px solid var(--Neutral-30, #404547);
+    border: 1px solid var(--Neutral-20, #404547);
     color: var(--Neutral-30);
   }
 
@@ -130,14 +130,14 @@
 
     .connection-button-container {
       border-radius: 27px;
-      border: 1px solid var(--Neutral-30);
-      background: var(--Neutral-5);
+      border: 1px solid var(--Neutral-20);
+      background: var(--Neutral-00);
       padding: 10px;
     }
 
     .text-indicator {
       font-size: 11px;
-      color: var(--Blue-500);
+      color: var(--Neutral-30);
       user-select: none;
     }
 
@@ -150,8 +150,8 @@
 }
 
 .actions-nav {
-  background: var(--Neutral-5);
-  border: 1px solid var(--Neutral-30);
+  background: var(--Neutral-00);
+  border: 1px solid var(--Neutral-20);
   border-radius: 27px;
   display: inline-flex;
   gap: 12px;
