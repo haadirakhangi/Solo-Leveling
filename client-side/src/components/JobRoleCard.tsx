@@ -33,6 +33,7 @@ import image8 from '../assets/cards/image8.jpg';
 import image9 from '../assets/cards/image9.jpg';
 import image10 from '../assets/cards/image10.jpg';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface JobRoleCardProps {
     jobTitle: string;
@@ -44,6 +45,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
     const [skillGapData, setSkillGapData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const navigate = useNavigate();
 
     const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10];
     const randomIndex = Math.floor(Math.random() * images.length);
@@ -157,7 +159,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="purple" onClick={onClose}>Close</Button>
+                        <Button colorScheme="purple" onClick={() => navigate('/student/dashboard')}>Dashboard</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
