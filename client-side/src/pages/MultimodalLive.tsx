@@ -217,8 +217,8 @@ const MultimodalLive = () => {
                         <div className="main-app-area" style={{ "fontFamily": "Jost" }}>
                             <Altair />
                             <Flex>
-                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
-                                    <Box as="section" color="white" backgroundColor="purple.700" margin="20px" borderRadius="2xl" textAlign="center" fontSize="2xl">
+                                <Box as="section" color="white" backgroundColor="purple.500" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
+                                    <Box as="section" color="black" backgroundColor="white" margin="20px" borderRadius="2xl" textAlign="center" fontSize="2xl">
                                         <h2 >{selectedScenario.title}</h2>
                                     </Box>
                                     <Box as="section" marginBottom="15px" textAlign="center">
@@ -231,17 +231,17 @@ const MultimodalLive = () => {
                                             mx="auto"
                                         />
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="black" backgroundColor="white" padding="12px" borderRadius="2xl" margin="10px">
                                         <p color="white"><strong>Scenario:</strong> {selectedScenario.scenario}</p>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="black" backgroundColor="white" padding="12px" borderRadius="2xl" margin="10px">
                                         <p color="white"><strong>AI Role:</strong> {selectedScenario.ai_role}</p>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="12px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="black" backgroundColor="white" padding="12px" borderRadius="2xl" margin="10px">
                                         <p color="white"><strong>Student Role:</strong> {selectedScenario.student_role}</p>
                                     </Box>
                                 </Box>
-                                <Box as="section" color="white" backgroundColor="purple.700" borderRadius="2xl" height="98vh" border="1px" width="32.33vw" marginLeft="7px" marginRight="7px">
+                                <Box as="section" color="white" backgroundColor="purple.500" borderRadius="2xl" height="98vh" border="1px" width="32.33vw" marginLeft="7px" marginRight="7px">
                                     <Box margin="15px" marginLeft="50px" display="flex" alignItems="center" justifyContent="center" height="100%">
                                         {videoStream ? (
                                             <video
@@ -251,7 +251,7 @@ const MultimodalLive = () => {
                                                 playsInline
                                             />
                                         ) : (
-                                            <Box as="section" color="white" backgroundColor="purple.900" borderRadius="2xl" border="1px" margin="10px" position={"relative"} left={"-15px"}>
+                                            <Box as="section" color="white" backgroundColor="purple.700" borderRadius="2xl" border="1px" margin="10px" position={"relative"} left={"-15px"}>
                                                 <Box as="section" margin="100px 200px 100px 200px" textAlign="center" >
                                                 <TfiCamera size="50px" color="#1A202C"/>
                                                 </Box>
@@ -260,8 +260,8 @@ const MultimodalLive = () => {
                                     </Box>
                                 </Box>
 
-                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
-                                    <Box as="section" color="white" backgroundColor="purple.900" padding="10px" borderRadius="2xl" border="1px" margin="10px">
+                                <Box as="section" color="white" backgroundColor="purple.500" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
+                                    <Box as="section" color="white" backgroundColor="purple.700" padding="10px" borderRadius="2xl" border="1px" margin="10px">
                                         <Box as="section" padding="12px" textAlign="center">
                                             <Image
                                                 src={human}
@@ -274,7 +274,7 @@ const MultimodalLive = () => {
                                             <Text padding="30px" style={{ "fontFamily": "Jost" }}>Athena</Text>
                                         </Box>
                                     </Box>
-                                    <Box as="section" color="black" backgroundColor="purple.300" padding="10px" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="black" backgroundColor="white" padding="10px" borderRadius="2xl" margin="10px">
                                         <Text>Guidelines : </Text>
                                         <Text color="black">
                                             1. AI analyzes tone, clarity, and confidence, so articulate your answers at a steady pace.<br />
@@ -285,7 +285,7 @@ const MultimodalLive = () => {
                                         </Text>
                                     </Box>
 
-                                    <Box as="section" color="black" backgroundColor="purple.300" borderRadius="2xl" margin="10px">
+                                    <Box as="section" color="black" backgroundColor="white" borderRadius="2xl" margin="10px">
                                         <Flex>
                                             <Box margin="10px">
                                                 <TfiTimer size="50px"
