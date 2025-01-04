@@ -247,7 +247,7 @@ def analyze_soft_skill_quiz():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.rout('/fetch-in-demand-skills', methods=['POST'])
+@students.route('/fetch-in-demand-skills', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def fetch_in_demand_skills():
     try:
