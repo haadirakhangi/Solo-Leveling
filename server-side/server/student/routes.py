@@ -172,10 +172,13 @@ def interest_assessment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@students.route('/analyze-conversation', methods=['POST'])
+@students.route('/analyze-roleplay-exercise', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def anaylze_conversation():
     try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        student_id = session.get("student_id")
         data : dict = request.form
         if 'video_file' not in request.files:
             return jsonify({"error": "Video file is required"}), 400
@@ -191,8 +194,14 @@ def anaylze_conversation():
         video_file.save(video_file_path)
         scenario = data.get("scenario")
         response = EVALUATOR.evaluate_video_for_soft_skills(video_file_path, scenario)
-        print(response)
-        return jsonify(response), 200
+        result = std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},
+            {"$set": {"soft_skill_assessment.roleplay": response}},
+        )
+        if result.matched_count == 0:
+            print(f"something wrong--> {ObjectId(student_id)}")
+            return jsonify({"error": "User not found"}), 404
+        return jsonify({"response": True, "roleplay_response": response}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -203,13 +212,13 @@ def logout():
     session.clear()
     return jsonify({"message": "User logged out successfully", "response":True}), 200
 
-@students.route('/submit-quiz-scores', methods=['POST'])
+@students.route('/submit-technical-quiz', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def submit_quiz_score():
+def submit_technical_quiz():
     try:
         data = request.json
         if not data:
-            return jsonify({"error": "Hard Quiz assessment data is missing"}), 400
+            return jsonify({"error": "Technical assessment data is missing"}), 400
 
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
@@ -218,7 +227,7 @@ def submit_quiz_score():
         # Update the user's document in the MongoDB collection
         result = std_profile_coll.update_one(
             {"_id": ObjectId(student_id)},  # Match the user by their ID
-            {"$set": {"hard_quiz_assessment": data}},  # Update or add quiz_assessment field
+            {"$set": {"technical_assessment": data}},  # Update or add quiz_assessment field
             upsert=False  # Prevent creating a new document if user does not exist
         )
 
@@ -227,54 +236,38 @@ def submit_quiz_score():
             print(f"something wrong--> {ObjectId(student_id)}")
             return jsonify({"error": "User not found"}), 404
 
-        return jsonify({"message": "Hard Quiz assessment updated successfully"}), 200
+        return jsonify({"message": "Technical assessment updated successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.route('/analyze-soft-skill-quiz', methods=['POST'])
+@students.route('/submit-soft-skill-quiz', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def analyze_soft_skill_quiz():
     try:
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
+        
+        student_id = session.get("student_id")
         data : dict = request.json
         responses = data.get("responses")
         if not responses:
             return jsonify({"error": "Soft Quiz assessment data is missing"}), 400
         soft_skill_analysis = EVALUATOR.evaluate_quiz_for_soft_skills(responses)
+        result = std_profile_coll.update_one(
+            {"_id": ObjectId(student_id)},  # Match the user by their ID
+            {"$set": {"soft_skill_assessment.quiz": soft_skill_analysis}},  # Update or add quiz_assessment field
+            upsert=False  # Prevent creating a new document if user does not exist
+        )
+        # Check if the document was updated
+        if result.matched_count == 0:
+            print(f"something wrong--> {ObjectId(student_id)}")
+            return jsonify({"error": "User not found"}), 404
         return jsonify({"soft_skill_analysis": soft_skill_analysis}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@students.route('/fetch-in-demand-skills', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def fetch_in_demand_skills():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        data : dict = request.json
-        job_role = data.get("job_role")
-        response = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
-        return jsonify(response), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@students.route('fetch-online-courses', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def fetch_online_courses():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        student_id = session.get("student_id")
-        data : dict = request.json
-        skills = data.get("skills")
-        courses = SERPER_CLIENT.find_courses(skills)
-        return jsonify({"courses": courses}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-@students.route('fetch-job-roles', methods=['GET'])
+@students.route('/fetch-job-roles', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def fetch_job_roles():
     try:
@@ -290,7 +283,76 @@ def fetch_job_roles():
         
         job_roles_one = future_job_one.result()
         job_roles_two = future_job_two.result()
-        all_jobs = job_roles_one + job_roles_two
-        return jsonify({"job_roles":list(set(all_jobs))}), 200
+        all_jobs = {**job_roles_one, **job_roles_two}
+        return jsonify({"job_roles":all_jobs}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@students.route('/skill-gap-analysis', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_in_demand_skills():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        job_role = data.get("job_role")
+        required_skills = SKILLS_ANALYZER.fetch_extract_demand_skills(job_role)
+        students_current_skills = data.get("current_skills")
+        skill_gap_analysis = SKILLS_ANALYZER.analyze_skill_gap(job_role, students_current_skills, required_skills)
+        return jsonify({"required_skills":required_skills, "skill_gap_analysis": skill_gap_analysis}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@students.route('/fetch-online-courses', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def fetch_online_courses():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+        data : dict = request.json
+        skills = data.get("required_skills")
+        courses = SERPER_CLIENT.find_courses(skills)
+        return jsonify({"courses": courses}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@students.route('/user-dashboard', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def user_dashboard():
+    try:
+        if "student_id" not in session:
+            return jsonify({"error": "User not logged in"}), 401
+
+        student_id = session.get("student_id")
+        user_data : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+
+        # Prepare the dashboard data
+        dashboard_data = {
+            "full_name": user_data.get("full_name", ""),
+            "age": user_data.get("age", ""),
+            "location": user_data.get("location", ""),
+            "preferred_language": user_data.get("preferred_language", ""),
+            "email": user_data.get("email", ""),
+            "gender": user_data.get("gender", ""),
+            "highest_education": user_data.get("highest_education", ""),
+            "field_of_study": user_data.get("field_of_study", ""),
+            "dream_job": user_data.get("dream_job", ""),
+            "interests": user_data.get("interests", []),
+            "challenges": user_data.get("challenges", ""),
+            "motivation": user_data.get("motivation", ""),
+            "learning_platforms": user_data.get("learning_platforms", ""),
+            "top_skills": user_data.get("top_skills", []),
+            "resume_id": user_data.get("resume_id", ""),
+            "technical_assessment": user_data.get("technical_assessment", {}),
+            "soft_skill_assessment": user_data.get("soft_skill_assessment", {}),
+        }
+
+        return jsonify(dashboard_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    

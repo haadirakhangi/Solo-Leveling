@@ -174,7 +174,7 @@ const MultimodalLive = () => {
         formData.append("video_file", videoBlob, "recording.webm");
 
         try {
-            const response = await axios.post("/api/student/analyze-conversation", formData, {
+            const response = await axios.post("/api/student/analyze-roleplay-exercise", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
