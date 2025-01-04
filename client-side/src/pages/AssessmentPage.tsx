@@ -141,7 +141,6 @@ const AssessmentPage = () => {
   if (loading) {
     return (
       <Flex direction="column" align="center" justify="center" minHeight="100vh" bg="purple.50">
-        <Spinner size="xl" color="purple.500" mb={6} />
         <Progress hasStripe isIndeterminate size="lg" colorScheme="purple" width="80%" mb={6} />
         <Text fontSize="lg" color="purple.700">
           Fetching your assessment details...

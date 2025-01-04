@@ -33,13 +33,13 @@ const MultimodalLive = () => {
     const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+    const [_recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
     const navigate = useNavigate();
     const toast = useToast();
-    const [startTime, setStartTime] = useState<number>(0);
+    const [_startTime, setStartTime] = useState<number>(0);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
-    const [timerRunning, setTimerRunning] = useState<boolean>(false);
+    const [_timerRunning, setTimerRunning] = useState<boolean>(false);
     const timerRef = useRef<number | null>(null);
 
     const getRandomScenario = () => {
@@ -107,7 +107,6 @@ const MultimodalLive = () => {
                 videoRef.current.srcObject = userMediaStream;
                 videoRef.current.muted = true; // Prevent feedback
             }
-
             // Combine the screen and user microphone streams
             const audioContext = new AudioContext();
             const destination = audioContext.createMediaStreamDestination();
@@ -200,14 +199,14 @@ const MultimodalLive = () => {
         }
     };
 
-    const downloadVideo = (blob: Blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "recording.webm";
-        link.click();
-        URL.revokeObjectURL(url);
-    };
+    // const downloadVideo = (blob: Blob) => {
+    //     const url = URL.createObjectURL(blob);
+    //     const link = document.createElement("a");
+    //     link.href = url;
+    //     link.download = "recording.webm";
+    //     link.click();
+    //     URL.revokeObjectURL(url);
+    // };
 
     return (
         <div className="App">
@@ -241,22 +240,68 @@ const MultimodalLive = () => {
                                         <p color="white"><strong>Student Role:</strong> {selectedScenario.student_role}</p>
                                     </Box>
                                 </Box>
-                                <Box as="section" color="white" backgroundColor="purple.700" borderRadius="2xl" height="98vh" border="1px" width="32.33vw" marginLeft="7px" marginRight="7px">
-                                    <Box margin="15px" marginLeft="50px" display="flex" alignItems="center" justifyContent="center" height="100%">
-                                        {videoStream ? (
+                                <Box
+                                    as="section"
+                                    color="white"
+                                    backgroundColor="purple.700"
+                                    borderRadius="2xl"
+                                    height="98vh"
+                                    border="1px"
+                                    width="32.33vw"
+                                    marginLeft="7px"
+                                    marginRight="7px"
+                                >
+                                    <Box
+                                        margin="15px"
+                                        marginLeft="50px"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        height="100%"
+                                        position="relative"  // Ensuring proper layout of child elements
+                                    >
+                                        <video
+                                            ref={videoRef}
+                                            className="stream" // Removed the cn condition and class `hidden`
+                                            autoPlay
+                                            playsInline
+                                            style={{
+                                                width: '100%', // Make sure video takes up the full width
+                                                height: '100%', // Ensure the video takes up the full height
+                                                objectFit: 'cover', // Ensure the video fits within the container
+                                            }}
+                                            />
+                                            {/* {videoStream ? (
                                             <video
                                                 ref={videoRef}
-                                                className={cn("stream", { hidden: !videoStream })}
+                                                className="stream" // Removed the cn condition and class `hidden`
                                                 autoPlay
                                                 playsInline
+                                                style={{
+                                                    width: '100%', // Make sure video takes up the full width
+                                                    height: '100%', // Ensure the video takes up the full height
+                                                    objectFit: 'cover', // Ensure the video fits within the container
+                                                }}
                                             />
                                         ) : (
-                                            <Box as="section" color="white" backgroundColor="gray.900" borderRadius="2xl" border="1px" margin="10px" position={"relative"} left={"-15px"}>
-                                                <Box as="section" margin="100px 200px 100px 200px" textAlign="center" >
-                                                <TfiCamera size="50px" color="white"/>
+                                            <Box
+                                                as="section"
+                                                color="white"
+                                                backgroundColor="gray.900"
+                                                borderRadius="2xl"
+                                                border="1px"
+                                                margin="10px"
+                                                position="relative"
+                                            >
+                                                <Box
+                                                    as="section"
+                                                    margin="100px 200px 100px 200px"
+                                                    textAlign="center"
+                                                >
+                                                    <TfiCamera size="50px" color="white" />
                                                 </Box>
-                                            </Box>
-                                        )}
+                                            </Box> */}
+                                            {/* )} */}
                                     </Box>
                                 </Box>
 

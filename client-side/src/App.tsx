@@ -8,6 +8,7 @@ import TeacherRegister from "./pages/register/TeacherRegister";
 import HardSkillQuiz from "./pages/HardSkillQuiz";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Interview from "./pages/Interview";
+import JobRoles from "./pages/JobRoles";
 // import "./pages/student/content/i18n"
 import AssessmentPage from "./pages/AssessmentPage";
 function App() {
@@ -24,6 +25,7 @@ function App() {
       <Route element={<MultimodalLive />} path="/student/scenario" />
       <Route element={<AssessmentPage />} path="/student/assessment" />
       <Route element={<Dashboard />} path="/student/dashboard" />
+      <Route element={<JobRoles />} path="/student/job-roles" />
 
       
 
