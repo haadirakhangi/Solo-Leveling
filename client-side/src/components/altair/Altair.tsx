@@ -20,7 +20,14 @@ const declaration: FunctionDeclaration = {
   },
 };
 
-function AltairComponent() {
+interface Scenario {
+  title: string;
+  scenario: string;
+  ai_role: string;
+  student_role: string;
+}
+
+function AltairComponent({Scenario}: {Scenario: Scenario}) {
   const [jsonString, setJSONString] = useState<string>("");
   const { client, setConfig } = useLiveAPIContext();
 
@@ -48,7 +55,13 @@ Adaptability – Alter the scenario’s direction unexpectedly and observe how t
 Stress Management – Simulate high-pressure situations to gauge emotional control.
 Emotional Intelligence – Introduce moments that test empathy, communication, and understanding of others' perspectives.
 Active Listening – Embed cues or subtle shifts in dialogue that require the user to recall previous points accurately.
-Leadership – Create moments where the user must guide, inspire, or make decisions for a team or group.`,
+Leadership – Create moments where the user must guide, inspire, or make decisions for a team or group.
+
+**INPUT**
+**Scenario Title:** ${Scenario["title"]}
+**Scenario:** ${Scenario["scenario"]}
+**AI Role:** ${Scenario["ai_role"]}
+**Student Role:** ${Scenario["student_role"]}`,
           },
         ],
       },

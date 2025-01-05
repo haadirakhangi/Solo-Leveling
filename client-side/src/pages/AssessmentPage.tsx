@@ -87,7 +87,7 @@ const AssessmentPage = () => {
     } else if (phaseName === "SoftSkillAssessment") {
       navigate("/student/soft-skill-quiz");
     } else if (phaseName === "ScenarioBasedAssessment") {
-      navigate("/student/scenario");
+      navigate("/student/roleplay-exercise");
     }
   };
 

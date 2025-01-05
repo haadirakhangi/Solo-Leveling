@@ -22,7 +22,7 @@ function App() {
       <Route element={<SoftSkillQuiz />} path="/student/soft-skill-quiz" />
       <Route element={<HardSkillQuiz />} path="/student/technical-quiz" />
       <Route element={<Interview />} path="/student/interview" />
-      <Route element={<MultimodalLive />} path="/student/scenario" />
+      <Route element={<MultimodalLive />} path="/student/roleplay-exercise" />
       <Route element={<AssessmentPage />} path="/student/assessment" />
       <Route element={<Dashboard />} path="/student/dashboard" />
       <Route element={<JobRoles />} path="/student/job-roles" />

@@ -306,18 +306,18 @@ def fetch_job_roles():
 @students.route('/skill-gap-analysis', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def skill_gap_analysis():
-    try:
+    # try:
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
 
         student_id = session["student_id"]
         data: dict = request.json
         job_role = data.get("job_role")
-        student_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        student_data : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
         if not student_data:
             return jsonify({"error": "Student not found"}), 404
         technical_assessment = student_data.get("technical_assessment", {})
-        knowledge_scores = technical_assessment.get("knowledgeScores", {})
+        knowledge_scores :dict = technical_assessment.get("knowledgeScores", {})
         students_current_skills = {}
         for field, scores in knowledge_scores.items():
             score = scores.get("score", 0)
@@ -325,9 +325,8 @@ def skill_gap_analysis():
             normalized_score = (score / max_score) * 10
             students_current_skills[field]=normalized_score
         existing_job_role_data = job_roles.find_one({"student_id": student_id, "job_role": job_role})
-        print(existing_job_role_data["skill_gap_analysis"])
-        session['required_skills'] = existing_job_role_data["required_skills"]
         if existing_job_role_data:
+            session['required_skills'] = existing_job_role_data["required_skills"]
             return jsonify({
                 "required_skills": existing_job_role_data["required_skills"],
                 "skill_gap_analysis": existing_job_role_data["skill_gap_analysis"]
@@ -347,8 +346,8 @@ def skill_gap_analysis():
             "skill_gap_analysis": skill_gap_analysis
         }), 200
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
     
 @students.route('/fetch-online-courses', methods=['POST'])
 @cross_origin(supports_credentials=True)
