@@ -305,7 +305,7 @@ def fetch_job_roles():
     
 @students.route('/skill-gap-analysis', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def fetch_in_demand_skills():
+def skill_gap_analysis():
     try:
         if "student_id" not in session:
             return jsonify({"error": "User not logged in"}), 401
@@ -313,15 +313,20 @@ def fetch_in_demand_skills():
         student_id = session["student_id"]
         data: dict = request.json
         job_role = data.get("job_role")
-        students_current_skills = data.get("current_skills")
-        if not students_current_skills:
-            student_data = std_profile_coll.find_one({"student_id": student_id})
-            if not student_data:
-                return jsonify({"error": "Student not found"}), 404
-
-            students_current_skills = student_data.get("top_skills", [])
-
+        student_data = std_profile_coll.find_one({"_id": ObjectId(student_id)})
+        if not student_data:
+            return jsonify({"error": "Student not found"}), 404
+        technical_assessment = student_data.get("technical_assessment", {})
+        knowledge_scores = technical_assessment.get("knowledgeScores", {})
+        students_current_skills = {}
+        for field, scores in knowledge_scores.items():
+            score = scores.get("score", 0)
+            max_score = scores.get("maxScore", 1)  # Avoid division by zero
+            normalized_score = (score / max_score) * 10
+            students_current_skills[field]=normalized_score
         existing_job_role_data = job_roles.find_one({"student_id": student_id, "job_role": job_role})
+        print(existing_job_role_data["skill_gap_analysis"])
+        session['required_skills'] = existing_job_role_data["required_skills"]
         if existing_job_role_data:
             return jsonify({
                 "required_skills": existing_job_role_data["required_skills"],
@@ -336,7 +341,7 @@ def fetch_in_demand_skills():
             "skill_gap_analysis": skill_gap_analysis
         }
         job_roles.insert_one(job_role_data)
-
+        session['required_skills'] = required_skills
         return jsonify({
             "required_skills": required_skills,
             "skill_gap_analysis": skill_gap_analysis
@@ -367,7 +372,7 @@ def user_dashboard():
 
         student_id = session.get("student_id")
         user_data : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
-
+        required_skills = session['required_skills']
         if not user_data:
             return jsonify({"error": "User not found"}), 404
 
@@ -390,9 +395,10 @@ def user_dashboard():
             "resume_id": user_data.get("resume_id", ""),
             "technical_assessment": user_data.get("technical_assessment", {}),
             "soft_skill_assessment": user_data.get("soft_skill_assessment", {}),
+            "required_skills": required_skills,
         }
 
-        return jsonify(dashboard_data), 200
+        return jsonify({'user_data' : dashboard_data}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -33,6 +33,7 @@ import image8 from '../assets/cards/image8.jpg';
 import image9 from '../assets/cards/image9.jpg';
 import image10 from '../assets/cards/image10.jpg';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface JobRoleCardProps {
     jobTitle: string;
@@ -44,6 +45,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
     const [skillGapData, setSkillGapData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const navigate = useNavigate();
 
     const images = [image1, image2, image3, image4, image5, image6, image7, image8, image9, image10];
     const randomIndex = Math.floor(Math.random() * images.length);
@@ -57,7 +59,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
         try {
             // Send the job title as part of the POST request
             const response = await axios.post('/api/student/skill-gap-analysis', { job_role });
-            setSkillGapData(response.data);
+            setSkillGapData(response.data.skill_gap_analysis);
         } catch (error) {
             console.error('Error fetching skill gap data:', error);
         } finally {
@@ -66,6 +68,9 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
     };
 
     const renderSkills = (skills: any) => {
+        if (!skills || typeof skills !== 'object') {
+            return <Text>No skills data available</Text>;
+        }
         return Object.entries(skills).map(([skill, description]) => (
             <Box key={skill} mb="3">
                 <Heading size="sm">{skill}</Heading>
@@ -73,6 +78,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
             </Box>
         ));
     };
+
 
     return (
         <Box boxShadow='lg' rounded='md' position="relative" overflow="hidden">
@@ -123,7 +129,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
             </Card>
 
             {/* Skill Gap Analysis Modal */}
-            <Modal isOpen={isOpen} onClose={onClose} size="lg">
+            <Modal isOpen={isOpen} onClose={onClose} size="4xl">
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>Skill Gap Analysis</ModalHeader>
@@ -157,10 +163,11 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="purple" onClick={onClose}>Close</Button>
+                        <Button colorScheme="purple" onClick={() => navigate('/student/dashboard')}>Go to Dashboard</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
         </Box>
     );
 };
