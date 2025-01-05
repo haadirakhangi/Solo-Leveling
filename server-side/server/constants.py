@@ -4,6 +4,9 @@ from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
 from api.gemini_client import GeminiProvider
 from api.tavily_client import TavilyProvider
 from api.serper_client import SerperProvider
+from core.submodule_generator import SubModuleGenerator
+from core.content_generator import ContentGenerator
+from core.lesson_planner import LessonPlanner
 from core.quiz_generator import QuizGenerator
 from core.skills_analyzer import SkillsAnalyzer
 from core.evaluator import Evaluator
@@ -18,6 +21,9 @@ EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 GEMINI_CLIENT = GeminiProvider()
 TAVILY_CLIENT = TavilyProvider()
 SERPER_CLIENT = SerperProvider()
+SUB_MODULE_GENERATOR = SubModuleGenerator()
+CONTENT_GENERATOR = ContentGenerator()
+LESSON_PLANNER = LessonPlanner()
 EVALUATOR = Evaluator()
 QUIZ_GENERATOR = QuizGenerator()
 SKILLS_ANALYZER = SkillsAnalyzer()

@@ -79,7 +79,7 @@ class SkillsAnalyzer:
 4. **Output Format (JSON):**
     * `"transferable_skills"`: (Dictionary)  A dictionary where the key is the name of the transferable skill and the value is the explanation of why that skill is transferable and how it can in the given job role. Should be NA if there are no transferable skills.
     * `"required_skill_development"`: (Dictionary)  A dictionary with the key being the skill name and the value being why it's important for the role and what the user needs to develop
-    * `"journey_assessment"`: (String) Difficulty assessment with justification.
+    * `"journey_assessment"`: (Dictionary) **key 1:** "level" with the value being the difficulty level of the journey (should be one of 'easy', 'easy-moderate', 'moderate', 'moderate-difficult', 'difficult'). **key 2:** "justification** with the value being the justification of the difficulty assessment.
 
 
 **Example Output:**
@@ -95,11 +95,13 @@ class SkillsAnalyzer:
     "Risk Management": "Important for identifying and mitigating potential project risks. You need to learn risk assessment techniques, develop mitigation strategies, and implement risk monitoring processes.",
     "Communication": "While you have good communication skills, focus on tailoring communication to different stakeholders and improving your presentation skills."
   },
-  "journey_assessment": "Given your current skillset, which shows strength in communication and some project planning experience, coupled with the transferable skills from software development, your career journey is estimated to be **Moderate**. You have significant gaps in team leadership and risk management, requiring focused development. However, your existing skills and transferable experience provide a good foundation to build upon."
+  "journey_assessment": {
+  "level": "moderate",
+  "justification" : "Given your current skillset, which shows strength in communication and some project planning experience, coupled with the transferable skills from software development, your career journey is estimated to be Moderate. You have significant gaps in team leadership and risk management, requiring focused development. However, your existing skills and transferable experience provide a good foundation to build upon."
 }\n\n"""
         prompt+= f"**Input:**\nJob Role: {job_role}\n\nRequired Skills :\n" + "{\n"
         for key, val in required_skills.items():
-            prompt+= f"  '{key}' : {val/10},\n"
+            prompt+= f"  '{key}' : {int(val)/10},\n"
         prompt += "}\n\nUser's Current Skills:\n{\n"
         for key, val in students_current_skills.items():
             prompt+= f"  '{key}' : {val},\n"

@@ -214,7 +214,7 @@ const MultimodalLive = () => {
                 <div className="streaming-console">
                     <main>
                         <div className="main-app-area" style={{ "fontFamily": "Jost" }}>
-                            <Altair />
+                            <Altair Scenario={selectedScenario} />
                             <Flex>
                                 <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
                                     <Box as="section" color="white" backgroundColor="purple.700" margin="20px" borderRadius="2xl" textAlign="center" fontSize="2xl">
@@ -240,19 +240,21 @@ const MultimodalLive = () => {
                                         <p color="white"><strong>Student Role:</strong> {selectedScenario.student_role}</p>
                                     </Box>
                                 </Box>
-                                {videoStream ? (
-                                    <video
-                                        ref={videoRef}
-                                        className={cn("stream", { hidden: !videoStream })}
-                                        autoPlay
-                                        playsInline
-                                        style={{ width: "100%", height: "100%", backgroundColor: "black" }}
-                                    />
-                                ) : (
-                                    <Box border="1px" borderRadius="full" padding="20px" backgroundColor="#27272a" shadow="2xl">
-                                        <TfiCamera size="50px" color="gray" />
-                                    </Box>
-                                )}
+                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
+                                    {videoStream ? (
+                                        <video
+                                            ref={videoRef}
+                                            className={cn("stream", { hidden: !videoStream })}
+                                            autoPlay
+                                            playsInline
+                                            style={{ width: "100%", height: "100%", backgroundColor: "black" }}
+                                        />
+                                    ) : (
+                                        <Box border="1px" borderRadius="full" padding="20px" backgroundColor="#27272a" shadow="2xl">
+                                            <TfiCamera size="50px" color="gray" />
+                                        </Box>
+                                    )}
+                                </Box>
 
                                 <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
                                     <Box as="section" color="white" backgroundColor="gray.900" padding="10px" borderRadius="2xl" border="1px" margin="10px">
