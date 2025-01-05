@@ -11,6 +11,16 @@ import Interview from "./pages/Interview";
 import JobRoles from "./pages/JobRoles";
 // import "./pages/student/content/i18n"
 import AssessmentPage from "./pages/AssessmentPage";
+
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import CourseCreate from "./pages/teacher/Coursecreate";
+import LessonCreate from "./pages/teacher/Lessoncreate";
+import CoursePage from "./pages/teacher/course/course";
+import LabManual from "./pages/teacher/course/Lab Manual/LabManual";
+import LabManualCreate from "./pages/teacher/course/Lab Manual/LabManualCreate";
+import LessonsGrid from "./pages/teacher/scheduler";
+
+
 function App() {
   return (
     <Routes>
@@ -26,6 +36,14 @@ function App() {
       <Route element={<AssessmentPage />} path="/student/assessment" />
       <Route element={<Dashboard />} path="/student/dashboard" />
       <Route element={<JobRoles />} path="/student/job-roles" />
+
+      <Route element={<TeacherDashboard />} path="/teacher/dashboard" />
+      <Route element={<CourseCreate />} path="/teacher/create-course" />
+      <Route element={<LessonCreate />} path="/teacher/create-lesson" />
+      <Route element={<CoursePage />} path="/teacher/course" />
+      <Route element={<LabManual />} path="/teacher/lab-manual" />
+      <Route element={<LabManualCreate />} path="/teacher/lab-manual-create" />
+      <Route element={<LessonsGrid />} path="/teacher/scheduler" />
 
       
 
