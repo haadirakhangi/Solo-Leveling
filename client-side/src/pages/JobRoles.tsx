@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Text, Flex, Progress, Center, Heading, Grid } from '@chakra-ui/react';
 import { Navbar } from '../components/navbar';
-import JobRoleCard from '../components/JObROleCard';
+import JobRoleCard from '../components/JobRoleCard';
 
 const JobRoles = () => {
     const [jobRoles, setJobRoles] = useState({});
