@@ -121,7 +121,7 @@ const JobRoleCard: React.FC<JobRoleCardProps> = ({ jobTitle, jobDescription }) =
             <Card
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                height="600px"
+                height="800px"
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"

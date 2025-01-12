@@ -24,6 +24,9 @@ import {
   Textarea,
   HStack,
   IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -51,6 +54,8 @@ const CourseCreate = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [lessonData, setLessonData] = useState<LessonData>({});
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [inputType, setInputType] = useState('pdf'); // State to handle the selected input type
+  const [courseTopics, setCourseTopics] = useState('');
 
   const { register, handleSubmit, formState: { errors }, getValues } = useForm({
     resolver: yupResolver(schema),
@@ -208,17 +213,51 @@ const CourseCreate = () => {
                     <FormErrorMessage>{errors.NumLects?.message}</FormErrorMessage>
                   </FormControl>
                   <FormControl mb={"5"} isRequired>
-                    <FormLabel className='feature-heading' letterSpacing={2}><b>Upload Lesson Related PDFs</b></FormLabel>
-                    <Input
-                      type="file"
-                      borderColor={'purple.600'}
-                      p={1}
-                      multiple={true}
-                      _hover={{ borderColor: "purple.600" }}
-                      accept=".pdf"
-                      onChange={handleFileChange}
-                    />
+                    <FormLabel className='feature-heading' letterSpacing={2}>
+                      <b>Syllabus:</b>
+                    </FormLabel>
+                    <RadioGroup onChange={setInputType} value={inputType}>
+                      <Stack direction="row" spacing={5}>
+                        <Radio value="pdf" colorScheme="purple">
+                          PDF
+                        </Radio>
+                        <Radio value="text" colorScheme="purple">
+                          Text
+                        </Radio>
+                      </Stack>
+                    </RadioGroup>
                   </FormControl>
+                  {inputType === 'pdf' && (
+                    <FormControl mb={"5"} isRequired>
+                      <FormLabel className='feature-heading' letterSpacing={2}>
+                        <b>Upload Course Syllabus PDFs</b>
+                      </FormLabel>
+                      <Input
+                        type="file"
+                        borderColor={'purple.600'}
+                        p={1}
+                        multiple={true}
+                        _hover={{ borderColor: "purple.600" }}
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                      />
+                    </FormControl>
+                  )}
+
+                  {inputType === 'text' && (
+                    <FormControl mb={"5"} isRequired>
+                      <FormLabel className='feature-heading' letterSpacing={2}>
+                        <b>Enter Course Topics</b>
+                      </FormLabel>
+                      <Textarea
+                        placeholder="Start typing..."
+                        value={courseTopics}
+                        onChange={(e) => setCourseTopics(e.target.value)}
+                        borderColor={'purple.600'}
+                        _hover={{ borderColor: "purple.600" }}
+                      />
+                    </FormControl>
+                  )}
                   <Button colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }} variant="outline" type="submit" width="full" mt={4}>
                     Generate Base lesson
                   </Button>

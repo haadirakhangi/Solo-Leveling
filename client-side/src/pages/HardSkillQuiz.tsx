@@ -188,7 +188,7 @@ const QuizPage: React.FC = () => {
   if (loading || isSubmitting) {
     return (
       <Flex direction="column" align="center" justify="center" h="100vh" bg="gray.100">
-        <Text fontSize="xl" color="purple.700">s
+        <Text fontSize="xl" color="purple.700">
           {isSubmitting ? 'Submitting your quiz...' : 'Generating questions...'}
         </Text>
         <Progress size="sm" isIndeterminate colorScheme="purple" w="100%" />

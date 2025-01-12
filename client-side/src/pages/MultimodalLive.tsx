@@ -240,7 +240,14 @@ const MultimodalLive = () => {
                                         <p color="white"><strong>Student Role:</strong> {selectedScenario.student_role}</p>
                                     </Box>
                                 </Box>
-                                <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
+                                <video
+                                    ref={videoRef}
+                                    className={cn("stream", { hidden: !videoStream })}
+                                    autoPlay
+                                    playsInline
+                                    style={{ width: "100%", height: "100%", backgroundColor: "black" }}
+                                />
+                                {/* <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" style={{ "fontFamily": "Jost" }} width="32.33vw">
                                     {videoStream ? (
                                         <video
                                             ref={videoRef}
@@ -254,7 +261,7 @@ const MultimodalLive = () => {
                                             <TfiCamera size="50px" color="gray" />
                                         </Box>
                                     )}
-                                </Box>
+                                </Box> */}
 
                                 <Box as="section" color="white" backgroundColor="purple.700" height="98vh" borderRadius="2xl" border="1px" width="32.33vw">
                                     <Box as="section" color="white" backgroundColor="gray.900" padding="10px" borderRadius="2xl" border="1px" margin="10px">

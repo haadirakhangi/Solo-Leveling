@@ -97,8 +97,8 @@ const SoftSkillQuiz: React.FC = () => {
     <Flex direction="column" align="center" justify="center" position="relative" h="100vh" bg="gray.100">
       {/* Show loading UI if isSubmitting is true */}
       {isSubmitting ? (
-        <Flex direction="column" align="center" justify="center" minHeight="100vh" bg="purple.50">
-          <Progress hasStripe isIndeterminate size="lg" colorScheme="purple" width="80%" mb={6} />
+        <Flex direction="column" w={'100%'} align="center" justify="center" bg="purple.50">
+          <Progress hasStripe isIndeterminate size="lg" colorScheme="purple" width="100%" mb={6} />
           <Text fontSize="lg" color="purple.700">
             Submitting...
           </Text>

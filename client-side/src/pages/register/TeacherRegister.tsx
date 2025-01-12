@@ -252,7 +252,7 @@ const TeacherRegister = () => {
   return (
     <div>
       <Navbar />
-      <Flex bg={useColorModeValue('purple.200', 'purple.800')} direction="column" width='full' align='center' justifyContent='center' minHeight={"79vh"}>
+      <Flex bg={useColorModeValue('purple.200', 'purple.800')} direction="column" width='full' align='center' justifyContent='center' minHeight={"100vh"}>
         <Text fontSize="4xl"
                   fontWeight="bold"
                   color={useColorModeValue('purple.800', 'purple.100')}
