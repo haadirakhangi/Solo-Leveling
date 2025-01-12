@@ -39,7 +39,7 @@ const RecommendedCard: React.FC<CourseCardProps> = ({ source, title, link }) => 
   const handleMouseLeave = () => setIsHovered(false);
 
   return (
-    <Box boxShadow='lg' rounded='md' position="relative" overflow="hidden">
+    <Box boxShadow='lg' rounded='md' position="relative" w="85%" overflow="hidden">
       <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <CardBody>
           <Flex direction="column" justify="space-between">
@@ -52,7 +52,7 @@ const RecommendedCard: React.FC<CourseCardProps> = ({ source, title, link }) => 
             <Stack mt='3' spacing='3'>
               <Stack direction="row" align="center" spacing="2">
                 <Image
-                  src={sourceIcons[source] || ''}
+                  src={courseraLogo}
                   alt={`${source} logo`}
                   boxSize="30px"
                 />

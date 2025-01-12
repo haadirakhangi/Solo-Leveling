@@ -61,7 +61,9 @@ Leadership – Create moments where the user must guide, inspire, or make decisi
 **Scenario Title:** ${Scenario["title"]}
 **Scenario:** ${Scenario["scenario"]}
 **AI Role:** ${Scenario["ai_role"]}
-**Student Role:** ${Scenario["student_role"]}`,
+**Student Role:** ${Scenario["student_role"]}
+
+Once, sufficient information is gathered (6-8 back and forth conversations), conclude the roleplaying exercise.`,
           },
         ],
       },

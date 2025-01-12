@@ -120,7 +120,7 @@ const Dashboard = () => {
                             {userData && <SkillAssess userData={userData} />}
                         </TabPanel>
                         <TabPanel>
-                            <RecommendCourses />
+                            <RecommendCourses recommendedCourses={userData.online_courses} />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

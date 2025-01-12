@@ -236,7 +236,7 @@ export const SkillAssess = ({userData} : {userData: UserData}) => {
                     </Thead>
                     <Tbody>
                         {userData.soft_skill_assessment.roleplay
-                            .filter(skill => skill.score !== "None")
+                            .filter(skill => skill.score !== "None" && Object.values(skill)[0] !== "None")
                             .map((skill, index) => (
                                 <Tr key={index}>
                                     <Td textAlign="center" width={"200px"}>

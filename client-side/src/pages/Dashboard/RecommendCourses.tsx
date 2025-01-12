@@ -6,20 +6,7 @@ import {
 } from '@chakra-ui/react';
 import RecommendedCard from '../../components/RecommendedCard';
 
-const recommendedCourses = [
-    {
-        source: "upGrad",
-        title: "PG Diploma in Data Science",
-        link: "https://www.upgrad.com/data-science-pgd-iiitb/",
-    },
-    {
-        source: "Coursera",
-        title: "Generative AI: Elevate Your",
-        link: "https://www.coursera.org/learn/generative-ai-elevate-your-data-science-career",
-    }
-];
-
-export const RecommendCourses = () => {
+export const RecommendCourses = ({ recommendedCourses }) => {
 
     return (
         <>
