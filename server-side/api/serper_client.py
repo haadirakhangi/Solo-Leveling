@@ -106,7 +106,7 @@ class SerperProvider:
 
             return course_links
         
-        course_links = {}
+        course_links = []
         for skill in skills:
             params = {
                 "q": f"Courses on {skill}",
@@ -119,8 +119,7 @@ class SerperProvider:
                 results = search.get_dict()
                 extracted_links = extract_course_links(results)
                 if extracted_links:
-                    course_links[skill] = extracted_links
+                    course_links = extracted_links
             except Exception as e:
                 print(f"Error searching for {skill}: {e}")
-                course_links[skill] = []
         return course_links

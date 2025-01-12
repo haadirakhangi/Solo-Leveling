@@ -349,18 +349,18 @@ def skill_gap_analysis():
     # except Exception as e:
     #     return jsonify({"error": str(e)}), 500
     
-@students.route('/fetch-online-courses', methods=['POST'])
-@cross_origin(supports_credentials=True)
-def fetch_online_courses():
-    try:
-        if "student_id" not in session:
-            return jsonify({"error": "User not logged in"}), 401
-        data : dict = request.json
-        skills = data.get("required_skills")
-        courses = SERPER_CLIENT.find_courses(skills)
-        return jsonify({"courses": courses}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+# @students.route('/fetch-online-courses', methods=['POST'])
+# @cross_origin(supports_credentials=True)
+# def fetch_online_courses():
+#     try:
+#         if "student_id" not in session:
+#             return jsonify({"error": "User not logged in"}), 401
+#         data : dict = request.json
+#         skills = data.get("required_skills")
+#         courses = SERPER_CLIENT.find_courses(skills)
+#         return jsonify({"courses": courses}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 @students.route('/user-dashboard', methods=['GET'])
 @cross_origin(supports_credentials=True)
@@ -372,9 +372,10 @@ def user_dashboard():
         student_id = session.get("student_id")
         user_data : dict = std_profile_coll.find_one({"_id": ObjectId(student_id)})
         required_skills = session['required_skills']
+        online_courses = SERPER_CLIENT.find_courses(required_skills)
         if not user_data:
             return jsonify({"error": "User not found"}), 404
-
+        print(online_courses)
         # Prepare the dashboard data
         dashboard_data = {
             "full_name": user_data.get("full_name", ""),
@@ -395,6 +396,7 @@ def user_dashboard():
             "technical_assessment": user_data.get("technical_assessment", {}),
             "soft_skill_assessment": user_data.get("soft_skill_assessment", {}),
             "required_skills": required_skills,
+            "online_courses": online_courses,
         }
 
         return jsonify({'user_data' : dashboard_data}), 200
