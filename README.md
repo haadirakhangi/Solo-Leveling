@@ -1,5 +1,5 @@
 # Solo-Leveling <br>
-## EY Techathon 4.0
+## EY Techathon 5.0
 ### Team Name: LLMAO<br>
 ### Problem statement: Education - AI for skill development in youth 
 **Scenario:**
