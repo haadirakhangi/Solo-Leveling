@@ -25,7 +25,7 @@ Our solution offered the platform of **Solo-Leveling** which is an AI-powered ca
 6. **Custom Course Marketplace:** Mentors can create and sell personalized content directly on the platform.  
 7. **Analytical Dashboards:** Provide visualization to students' on skill growth by progress tracking and periodic assessments, provide insigths to mentors on enrollment metrics and course impact.​ 
 8. **Practical Employability Tools:** Resume builder, mock interviews, and job simulations prepare students for real-world job scenarios.<br />
-Overall our platform attempt for holistic development of students' in their carrier development journey.
+Overall our platform attempt for holistic development of students' in their career development journey.
 
 ### Tech Stack:
 - Frontend: React, TypeScript, Vite, ChakraUI
